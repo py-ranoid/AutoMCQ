@@ -1,6 +1,7 @@
 import wikipedia
 import QuestionGenerator.PDFManip as manip
 import re
+import QuestionGenerator.PDFManip as manip
 
 def getRightTitle(error):
     values = error.split('\n')
@@ -11,11 +12,13 @@ def getPageContent(topic):
         content = wikipedia.WikipediaPage(title= topic, )
         return manip.removeSlashN(content.content)
     except Exception as ex:
+        print('Error: ' , str(ex))
         return getPageContent(getRightTitle(str(ex)))
 
 
 def getTreeFromContent(content):
     content = re.sub(r'(={3,8})(.+)(={3,8})' , ' ' , content)
+    content = manip.removeSlashN(content)
     allTopics = content.split(' == ')
 
     wikiContent = {}
@@ -23,7 +26,7 @@ def getTreeFromContent(content):
     i = 1
     while i < len(allTopics) - 1:
         if(len(allTopics[i]) >= 3 and len(allTopics[i+1]) >= 10 ):
-            wikiContent[allTopics[i]] = allTopics[i+1]
+            wikiContent[allTopics[i]] = manip.removeSlashN(allTopics[i+1])
         i+=2
 
     paragraph = ''
@@ -40,4 +43,4 @@ def getTreeForGivenTopic(topic):
     return tree , para
 
 
-getTreeForGivenTopic('Sex')
+getTreeForGivenTopic('cryptocurrency')

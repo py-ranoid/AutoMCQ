@@ -1,7 +1,9 @@
 import PyPDF2
-
+import re
 def removeSlashN(content):
-    return content.replace('\n' , ' ')
+    content = content.replace('\n' , ' ')
+    content = re.sub(r' +' , ' ' , content)
+    return content
 
 def getPdfFileObject(pdf):
     pdfReader = None
