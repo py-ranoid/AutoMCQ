@@ -3,6 +3,7 @@ import random
 from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
+from re import findall
 
 nlp = spacy.load('en_core_web_sm')
 MIN_SENT_LEN = 6
@@ -61,17 +62,58 @@ def gen_word2vec(doc):
     return model
 
 def gen_word2vec_from_content(content):
-    sents = [word_tokenize(s) for s in sent_tokenize(content.lower()]
+    sents = [word_tokenize(s) for s in sent_tokenize(content.lower())]
     # sents = [[y.orth_.lower() for y in x] for x in doc.sents]
     model = Word2Vec(sents, size=100, window=5, min_count=1, workers=4)
     return model
 
+def date_eliminator(answer,options):
+    YEAR_REGEX = r'[12][0-9]{3}'
+    month_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    short_months = [x[:3] for x in month_list]
+    MONTH_REGEX = r'('+"|".join(month_list)+"|"+("|".join(month_list)).lower()+"|"+"|".join(short_months)+"|"+("|".join(short_months)).lower()+')'
+    source_year = findall(YEAR_REGEX,answer)
+    source_month = findall(MONTH_REGEX,answer)
+    chosen_opts = []
+    if source_year:
+        if source_month:
+            for opt in options:
+                opt_year = findall(YEAR_REGEX,opt)
+                if opt_year:
+                    if source_year[0] == opt_year[0]:
+                        opt_month = findall(MONTH_REGEX,opt)
+                        if opt_month:
+                            if source_month[0] == opt_month[0]:
+                                continue
+                            else:
+                                chosen_opts.append(opt)
+                        else:
+                            continue
+                    else:
+                        chosen_opts.append(opt)
+                else:
+                    chosen_opts.append(opt)
+        else:
+            for opt in options:
+                opt_year = findall(YEAR_REGEX,opt)
+                if opt_year:
+                    if source_year[0] == opt_year[0]:
+                        continue
+                    else:
+                        chosen_opts.append(opt)
+                else:
+                    chosen_opts.append(opt)
+        return (chosen_opts+[answer])
+    else:
+        return options
 
-def find_best_options(options, w2v_model, answer):
+def find_best_options(options, w2v_model, answer,ent_type):
     ans_low = answer.lower()
     source = word_tokenize(ans_low)
     source_grams = ngrams(ans_low, 3)
     distances = {}
+    if ent_type == "DATE":
+        options = date_eliminator(answer,options)
     for opt in options:
         opt_low = opt.lower()
         if opt == answer:
@@ -168,9 +210,10 @@ def gen_sents(doc):
         if ent1 == ent2:
             options = [i for i in type2ent[ent2type[ent1]]
                        if i not in sent2ent[sentID]] + [ent1]
+
             if len(options) > 3:
-                options = find_best_options(list(options), w2v_model, ent1)[:3]
-            elif len(options) < 2:
+                options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
+            elif len(options) < 3:
                 continue
             sample = {"Question": sentence.replace(ent1, "_________"),
                       "Answer": ent1,
@@ -183,8 +226,8 @@ def gen_sents(doc):
             options = [i for i in type2ent[ent2type[ent1]]
                        if i not in sent2ent[sentID]] + [ent1]
             if len(options) > 3:
-                options = find_best_options(list(options), w2v_model, ent1)[:3]
-            elif len(options) < 2:
+                options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
+            elif len(options) < 3:
                 continue
             sample = {"Question": sentence.replace(ent1, "_________"),
                       "Answer": ent1,
@@ -196,8 +239,8 @@ def gen_sents(doc):
             options = [i for i in type2ent[ent2type[ent2]]
                        if i not in sent2ent[sentID]] + [ent2]
             if len(options) > 3:
-                options = find_best_options(list(options), w2v_model, ent2)[:3]
-            elif len(options) < 2:
+                options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2])[:3]
+            elif len(options) < 3:
                 continue
             sample = {"Question": sentence.replace(ent2, "_________"),
                       "Answer": ent2,
