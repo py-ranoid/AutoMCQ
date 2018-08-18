@@ -59,7 +59,6 @@ def getQuestionsForText():
     content = req[CUSTOM_CONTENT]
     questionArray = qgen.getQuestions(content)
     resp = {}
-    resp[CUSTOM_CONTENT] = content
     resp[QUESTIONS] = questionArray
     return jsonify(resp)
 

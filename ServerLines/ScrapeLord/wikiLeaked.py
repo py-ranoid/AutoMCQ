@@ -17,7 +17,6 @@ def getPageContent(topic):
 
 
 def getTreeFromContent(content):
-    content = re.sub(r'(={3,8})(.+)(={3,8})' , ' ' , content)
     content = manip.removeSlashN(content)
     allTopics = content.split(' == ')
 
@@ -26,7 +25,8 @@ def getTreeFromContent(content):
     i = 1
     while i < len(allTopics) - 1:
         if(len(allTopics[i]) >= 3 and len(allTopics[i+1]) >= 10 ):
-            wikiContent[allTopics[i]] = manip.removeSlashN(allTopics[i+1])
+            tempContent = allTopics[i+1]
+            wikiContent[allTopics[i]] = manip.removeSlashN(re.sub(r'(={1,8})(.*)(={1,8})' , ' ' , tempContent))
         i+=2
 
     paragraph = ''
@@ -43,4 +43,4 @@ def getTreeForGivenTopic(topic):
     return tree , para
 
 
-# getTreeForGivenTopic('cryptocurrency')
+getTreeForGivenTopic('cryptocurrency')
