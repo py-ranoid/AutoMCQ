@@ -151,10 +151,11 @@ def gen_sents(doc):
         if sent_len < MIN_SENT_LEN or sent_len > MAX_SENT_LEN:
             continue
         if ent1 == ent2:
-            options = type2ent[ent2type[ent1]]
-            if len(options) > 2:
+            options = [i for i in type2ent[ent2type[ent1]] if i not in sent2ent[sentID]]+ [ent1]
+            if len(options) > 3:
                 options = find_best_options(list(options),w2v_model,ent1)[:3]
-
+            elif len(options) < 2:
+                continue
             sample = {"Question":sentence.replace(ent1,"_________"),
                       "Answer":ent1,
                       "Options":options,
@@ -163,10 +164,11 @@ def gen_sents(doc):
 
         else:
             # For Entity 1
-            options = type2ent[ent2type[ent1]]
-            if len(options) > 2:
+            options = [i for i in type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
+            if len(options) > 3:
                 options = find_best_options(list(options),w2v_model,ent1)[:3]
-
+            elif len(options) < 2:
+                continue
             sample = {"Question":sentence.replace(ent1,"_________"),
                       "Answer":ent1,
                       "Options":options,
@@ -174,13 +176,15 @@ def gen_sents(doc):
             result.append(sample)
 
             # For Entity 2
-            options = type2ent[ent2type[ent2]]
-            if len(options) > 2:
+            options = [i for i in type2ent[ent2type[ent2]] if i not in sent2ent[sentID]]+ [ent2]
+            if len(options) > 3:
                 options = find_best_options(list(options),w2v_model,ent2)[:3]
-
+            elif len(options) < 2:
+                continue
             sample = {"Question":sentence.replace(ent2,"_________"),
                       "Answer":ent2,
                       "Options":options,
                       "Type":ent2type[ent2]}
             result.append(sample)
+    random.shuffle(result)
     return result
