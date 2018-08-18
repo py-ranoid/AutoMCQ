@@ -206,3 +206,8 @@ def gen_sents(doc):
             result.append(sample)
     random.shuffle(result)
     return result
+
+def getQuestions(content):
+    doc = get_doc(content)
+    questionArray = gen_sents(doc)
+    return questionArray

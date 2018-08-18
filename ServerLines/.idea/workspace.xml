@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="757b3a5c-5813-4b39-8dae-6bb252567875" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/QuestionGenerator/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ScrapeLord/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FlaskServer/YetAnotherFlaskServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/FlaskServer/YetAnotherFlaskServer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuestionGenerator/Qgen.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/Qgen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" beforeDir="false" afterPath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/ServerLines$wikiLeaked.coverage" NAME="wikiLeaked Coverage Results" MODIFIED="1534607129444" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ScrapeLord" />
+    <SUITE FILE_PATH="coverage/ServerLines$wikiLeaked.coverage" NAME="wikiLeaked Coverage Results" MODIFIED="1534619283773" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ScrapeLord" />
     <SUITE FILE_PATH="coverage/ServerLines$YetAnotherFlaskServer.coverage" NAME="YetAnotherFlaskServer Coverage Results" MODIFIED="1534606572756" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/FlaskServer" />
   </component>
   <component name="FUSProjectUsageTrigger">
@@ -31,22 +30,22 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="py" value="5" />
+          <entry key="py" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="Python" value="5" />
+          <entry key="Python" value="6" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="py" value="3538" />
+          <entry key="py" value="4320" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="3538" />
+          <entry key="Python" value="4320" />
         </counts>
       </usages-collector>
     </session>
@@ -56,13 +55,27 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/FlaskServer/YetAnotherFlaskServer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="195">
-              <caret line="46" column="61" selection-start-line="46" selection-start-column="61" selection-end-line="46" selection-end-column="61" />
+            <state relative-caret-position="177">
+              <caret line="29" column="13" lean-forward="true" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
               <folding>
                 <element signature="e#0#42#0" expanded="true" />
-                <marker date="1534610576480" expanded="true" signature="354:428" ph="..." />
-                <marker date="1534610576480" expanded="true" signature="499:1512" ph="..." />
-                <marker date="1534610576480" expanded="true" signature="1392:1512" ph="..." />
+                <marker date="1534617984492" expanded="true" signature="396:445" ph="..." />
+                <marker date="1534617984492" expanded="true" signature="522:1716" ph="..." />
+                <marker date="1534617984492" expanded="true" signature="1493:1494" ph="..." />
+                <marker date="1534617984492" expanded="true" signature="1713:1716" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1890">
+              <caret line="58" column="27" selection-start-line="58" selection-start-column="27" selection-end-line="58" selection-end-column="27" />
+              <folding>
+                <element signature="e#0#12#0" expanded="true" />
+                <marker date="1534615797889" expanded="true" signature="8919:8924" ph="..." />
               </folding>
             </state>
           </provider>
@@ -71,10 +84,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/QuestionGenerator/PDFManip.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+            <state relative-caret-position="-25">
+              <caret column="13" lean-forward="true" selection-start-column="13" selection-end-column="13" />
               <folding>
-                <marker date="1534607948926" expanded="true" signature="41:82" ph="..." />
+                <marker date="1534614289279" expanded="true" signature="41:82" ph="..." />
+                <marker date="1534614289279" expanded="true" signature="362:596" ph="..." />
               </folding>
             </state>
           </provider>
@@ -83,12 +97,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="25" column="18" selection-start-line="25" selection-start-column="18" selection-end-line="25" selection-end-column="18" />
+            <state relative-caret-position="195">
+              <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
-                <marker date="1534610576469" expanded="true" signature="86:140" ph="..." />
-                <marker date="1534610576469" expanded="true" signature="166:171" ph="..." />
+                <marker date="1534621523861" expanded="true" signature="96:150" ph="..." />
+                <marker date="1534621523861" expanded="true" signature="176:181" ph="..." />
               </folding>
             </state>
           </provider>
@@ -107,6 +121,10 @@
     <findStrings>
       <find>His</find>
       <find>===</find>
+      <find>custom_content</find>
+      <find>wiki_conte</find>
+      <find>female</find>
+      <find>fungi</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -116,8 +134,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" />
-        <option value="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" />
+        <option value="$PROJECT_DIR$/QuestionGenerator/Qgen.py" />
         <option value="$PROJECT_DIR$/FlaskServer/YetAnotherFlaskServer.py" />
+        <option value="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" />
       </list>
     </option>
   </component>
@@ -149,22 +168,7 @@
             <path>
               <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
               <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="FlaskServer" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="PDFs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
               <item name="QuestionGenerator" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="ScrapeLord" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
@@ -280,12 +284,12 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2532189" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32891566" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -322,35 +326,48 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/QuestionGenerator/PDFManip.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" lean-forward="true" selection-start-line="22" selection-end-line="22" />
+        <state relative-caret-position="-25">
+          <caret column="13" lean-forward="true" selection-start-column="13" selection-end-column="13" />
           <folding>
-            <marker date="1534607948926" expanded="true" signature="41:82" ph="..." />
+            <marker date="1534614289279" expanded="true" signature="41:82" ph="..." />
+            <marker date="1534614289279" expanded="true" signature="362:596" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="25" column="18" selection-start-line="25" selection-start-column="18" selection-end-line="25" selection-end-column="18" />
+        <state relative-caret-position="195">
+          <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-            <marker date="1534610576469" expanded="true" signature="86:140" ph="..." />
-            <marker date="1534610576469" expanded="true" signature="166:171" ph="..." />
+            <marker date="1534621523861" expanded="true" signature="96:150" ph="..." />
+            <marker date="1534621523861" expanded="true" signature="176:181" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1890">
+          <caret line="58" column="27" selection-start-line="58" selection-start-column="27" selection-end-line="58" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+            <marker date="1534615797889" expanded="true" signature="8919:8924" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/FlaskServer/YetAnotherFlaskServer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="195">
-          <caret line="46" column="61" selection-start-line="46" selection-start-column="61" selection-end-line="46" selection-end-column="61" />
+        <state relative-caret-position="177">
+          <caret line="29" column="13" lean-forward="true" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
           <folding>
             <element signature="e#0#42#0" expanded="true" />
-            <marker date="1534610576480" expanded="true" signature="354:428" ph="..." />
-            <marker date="1534610576480" expanded="true" signature="499:1512" ph="..." />
-            <marker date="1534610576480" expanded="true" signature="1392:1512" ph="..." />
+            <marker date="1534617984492" expanded="true" signature="396:445" ph="..." />
+            <marker date="1534617984492" expanded="true" signature="522:1716" ph="..." />
+            <marker date="1534617984492" expanded="true" signature="1493:1494" ph="..." />
+            <marker date="1534617984492" expanded="true" signature="1713:1716" ph="..." />
           </folding>
         </state>
       </provider>

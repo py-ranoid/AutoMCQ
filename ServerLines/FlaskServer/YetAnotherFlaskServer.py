@@ -1,35 +1,39 @@
 from flask import Flask, request , jsonify
 import QuestionGenerator.PDFManip as manip
 import ScrapeLord.wikiLeaked as wiki
+import QuestionGenerator.Qgen as qgen
+
 app = Flask(__name__)
 PAGE_NUMBER = 'pageNumber'
 
 pdf_stored = None
-custom_content = None
 wiki_content = None
 
-CUSTOM_CONTENT = 'custom'
+CUSTOM_CONTENT = 'content'
 PDF_FILE = 'pdf'
 SUCCESS = 'Success'
 FAILURE = 'Failure'
 TOPIC = 'topic'
+QUESTIONS = 'questions'
 
 def resetContents():
-    custom_content = None
     wiki_content = None
     pdf_stored = None
 
-@app.route('/getPageQuestion', methods=['POST'])
-def getPageQuestion():
+
+@app.route('/getQuestionsForPdf', methods=['POST'])
+def getQuestionsForPdf():
     req = request.get_json()
     pageNumber = req[PAGE_NUMBER]
     textContent = manip.getPageContent(pageNumber , None)
-    textContent = manip.removeSlashN(textContent)
+    questionsArray = qgen.getQuestions(textContent)
+    resp = {}
+    resp[PAGE_NUMBER] = pageNumber
+    resp[QUESTIONS] = questionsArray
+    return jsonify(resp)
 
-    return jsonify(textContent)
-
-@app.route('/getPdf', methods=['POST'])
-def getPdfAndStore():
+@app.route('/getContentForPdf', methods=['POST'])
+def getContentForPdf():
     try:
         resetContents()
         pdf_stored = request.files[PDF_FILE]
@@ -49,13 +53,15 @@ def getContentForTopic():
     #train word to vec here
     return jsonify(content_tree)
 
-@app.route('/getContentForCustomContent', methods=['POST'])
-def getContentForCustomContent():
+@app.route('/getQuestionsForText', methods=['POST'])
+def getQuestionsForText():
     req = request.get_json()
-    resetContents()
-    custom_content = req[CUSTOM_CONTENT]
-    # Train word2vec here
-
+    content = req[CUSTOM_CONTENT]
+    questionArray = qgen.getQuestions(content)
+    resp = {}
+    resp[CUSTOM_CONTENT] = content
+    resp[QUESTIONS] = questionArray
+    return jsonify(resp)
 
 
 if __name__ == '__main__':

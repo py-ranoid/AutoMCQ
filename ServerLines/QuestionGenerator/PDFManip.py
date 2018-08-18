@@ -12,11 +12,19 @@ def getPdfFileObject(pdf):
         pdfReader = PyPDF2.PdfFileReader(pdf)
     return pdfReader
 
+def getCompletePdf(pdf):
+    pdfReader = PyPDF2.PdfFileReader(pdf)
+    numPages = pdfReader.numPages
+    content = ''
+    curPage = 1
+    while curPage < numPages:
+        content += removeSlashN(pdfReader.getPage(curPage).extractText())
+    return content
 
 def getPageContent(pageNumber , pdf):
     pdfReader = getPdfFileObject(pdf)
     content = pdfReader.getPage(pageNumber)
-    text = content.extractText()
+    text = removeSlashN(content.extractText())
     print(text)
     return text
 

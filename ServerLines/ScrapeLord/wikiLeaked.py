@@ -1,5 +1,6 @@
 import wikipedia
 import QuestionGenerator.PDFManip as manip
+import re
 
 def getRightTitle(error):
     values = error.split('\n')
@@ -14,7 +15,9 @@ def getPageContent(topic):
 
 
 def getTreeFromContent(content):
+    content = re.sub(r'(={3,8})(.+)(={3,8})' , ' ' , content)
     allTopics = content.split(' == ')
+
     wikiContent = {}
     wikiContent['Introduction'] = allTopics[0]
     i = 1
@@ -37,4 +40,4 @@ def getTreeForGivenTopic(topic):
     return tree , para
 
 
-# getTreeForGivenTopic('Android Operating System')
+getTreeForGivenTopic('Sex')
