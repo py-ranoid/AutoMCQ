@@ -1,21 +1,43 @@
 import spacy
 import random
-from nltk import word_tokenize
+# from nltk import word_tokenize
+# from nltk.util import ngrams
 from gensim.models import Word2Vec
 
+def ngrams(text,n):
+    return set([text[i:i+n] for i in range(len(text)-n)])
+
+def word_tokenize(word):
+    return word.split(' ')
+
+def metric(x,y):
+    # print (x.intersection(y))
+    # print (x.union(y))
+    try: return float(len(x.intersection(y)))/len(x.union(y))
+    except ZeroDivisionError:return 0
+
 def gen_word2vec(doc):
-    sents = [[y.orth_ for y in x] for x in doc.sents]
+    sents = [[y.orth_.lower() for y in x] for x in doc.sents]
     model = Word2Vec(sents, size=100, window=5, min_count=1, workers=4)
     return model
 
 def find_best_options(options,w2v_model,answer):
-    source = word_tokenize(answer)
+    ans_low = answer.lower()
+    source = word_tokenize(ans_low)
+    source_grams = ngrams(ans_low,3)
     distances = {}
     for opt in options:
+        opt_low = opt.lower()
         if opt == answer:continue
-        distance = w2v_model.wmdistance(word_tokenize(opt), source)
+        opt_grams = ngrams(opt_low,3)
+        if metric(source_grams,opt_grams) > 0.18:
+            distances[opt] = 40
+            continue
+        distance = w2v_model.wmdistance(word_tokenize(opt_low), source)
+        # print (opt,distance,metric(source_grams,opt_grams))
         distances[opt] = distance
     distances[answer] = 0
+    # print (distances)
     options.sort(key=lambda x:distances[x])
     return options
 
