@@ -43,4 +43,4 @@ def getTreeForGivenTopic(topic):
     return tree , para
 
 
-getTreeForGivenTopic('cryptocurrency')
+# getTreeForGivenTopic('cryptocurrency')
