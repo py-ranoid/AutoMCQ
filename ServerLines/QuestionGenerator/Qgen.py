@@ -4,33 +4,41 @@ import random
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
 
-def ngrams(text,n):
-    return set([text[i:i+n] for i in range(len(text)-n)])
+
+def ngrams(text, n):
+    return set([text[i:i + n] for i in range(len(text) - n)])
+
 
 def word_tokenize(word):
     return word.split(' ')
 
-def metric(x,y):
+
+def metric(x, y):
     # print (x.intersection(y))
     # print (x.union(y))
-    try: return float(len(x.intersection(y)))/len(x.union(y))
-    except ZeroDivisionError:return 0
+    try:
+        return float(len(x.intersection(y))) / len(x.union(y))
+    except ZeroDivisionError:
+        return 0
+
 
 def gen_word2vec(doc):
     sents = [[y.orth_.lower() for y in x] for x in doc.sents]
     model = Word2Vec(sents, size=100, window=5, min_count=1, workers=4)
     return model
 
-def find_best_options(options,w2v_model,answer):
+
+def find_best_options(options, w2v_model, answer):
     ans_low = answer.lower()
     source = word_tokenize(ans_low)
-    source_grams = ngrams(ans_low,3)
+    source_grams = ngrams(ans_low, 3)
     distances = {}
     for opt in options:
         opt_low = opt.lower()
-        if opt == answer:continue
-        opt_grams = ngrams(opt_low,3)
-        if metric(source_grams,opt_grams) > 0.18:
+        if opt == answer:
+            continue
+        opt_grams = ngrams(opt_low, 3)
+        if metric(source_grams, opt_grams) > 0.18:
             distances[opt] = 40
             continue
         distance = w2v_model.wmdistance(word_tokenize(opt_low), source)
@@ -38,8 +46,9 @@ def find_best_options(options,w2v_model,answer):
         distances[opt] = distance
     distances[answer] = 0
     # print (distances)
-    options.sort(key=lambda x:distances[x])
+    options.sort(key=lambda x: distances[x])
     return options
+
 
 nlp = spacy.load('en_core_web_sm')
 MIN_SENT_LEN = 6
@@ -57,67 +66,72 @@ This is judged to be one of the pivotal battles in the control of Indian subcont
 
 doc = nlp(text)
 
+
 def get_entities(doc):
     return doc.ents
 
+
 ENTITY_PRIORITIES = {
-"PERSON":20,
-"NORP":10,
-"FAC":9,
-"ORG":19,
-"GPE":15,
-"LOC":9,
-"PRODUCT":8,
-"EVENT":18,
-"WORK_OF_ART":17,
-"LAW":16,
-"LANGUAGE":0,
-"DATE":14,
-"TIME":1,
-"PERCENT":5,
-"MONEY":8,
-"QUANTITY":7,
-"ORDINAL":6,
-"CARDINAL":2,
+    "PERSON": 20,
+    "NORP": 10,
+    "FAC": 9,
+    "ORG": 19,
+    "GPE": 15,
+    "LOC": 9,
+    "PRODUCT": 8,
+    "EVENT": 18,
+    "WORK_OF_ART": 17,
+    "LAW": 16,
+    "LANGUAGE": 0,
+    "DATE": 14,
+    "TIME": 1,
+    "PERCENT": 5,
+    "MONEY": 8,
+    "QUANTITY": 7,
+    "ORDINAL": 6,
+    "CARDINAL": 2,
 }
 
-def map_ents_to_types(ent_list,doc):
+
+def map_ents_to_types(ent_list, doc):
     ent2type = {}
     type2ent = {}
     counter = {}
     sent2ent = {}
     for e in ent_list:
         init = e.start
-        sent_id = str(e.sent.start)+"#"+str(e.sent.end)
+        sent_id = str(e.sent.start) + "#" + str(e.sent.end)
         etype = doc[init].ent_type_
 
         ent2type[e.orth_] = etype
-        temp = type2ent.get(etype,None)
+        temp = type2ent.get(etype, None)
 
-        type2ent_new = set([e.orth_]) if temp is None else temp.union(set([e.orth_]))
+        type2ent_new = set(
+            [e.orth_]) if temp is None else temp.union(set([e.orth_]))
         type2ent[etype] = type2ent_new
 
-        counter[e.orth_] = 1+counter.get(e.orth_,0)
+        counter[e.orth_] = 1 + counter.get(e.orth_, 0)
 
-        sent2ent[sent_id] = [e.orth_] + sent2ent.get(sent_id,[])
+        sent2ent[sent_id] = [e.orth_] + sent2ent.get(sent_id, [])
 
-    return ent2type,type2ent,counter,sent2ent
+    return ent2type, type2ent, counter, sent2ent
 
 
-def sentID2sent(sentID,doc):
-    start,end = [int(x) for x in sentID.split("#")]
-    return doc[start:end].orth_.strip(),end-start
+def sentID2sent(sentID, doc):
+    start, end = [int(x) for x in sentID.split("#")]
+    return doc[start:end].orth_.strip(), end - start
 
-def choose_ent(ents,counter,ent2type,mul_priority=False,weight=20):
+
+def choose_ent(ents, counter, ent2type, mul_priority=False, weight=20):
     count_map = {}
     if mul_priority:
         for e in ents:
             pri = ENTITY_PRIORITIES[ent2type[e]]
-            count_map[(weight/counter[e])*pri] = [e] + count_map.get(e,[])
+            count_map[(weight / counter[e]) * pri] = [e] + count_map.get(e, [])
         return count_map[max(count_map.keys())][0]
     else:
         for e in ents:
-            count_map[counter[e]] = [e] + count_map.get(e,[])
+            count_map[counter[e]] = [e] + count_map.get(e, [])
         temp = min(count_map.keys())
         if len(count_map[temp]) > 1:
             fin = None
@@ -131,60 +145,66 @@ def choose_ent(ents,counter,ent2type,mul_priority=False,weight=20):
         else:
             return count_map[temp][0]
 
+
 def print_results(sents):
     for s in sents:
-        print ("Question",'\n',s["Question"])
-        print ("Answer",'\n',s["Answer"])
-        print ("Options",'\n',s["Options"])
-        print ("Type",'\n',s["Type"])
-    print (len(sents))
+        print("Question", '\n', s["Question"])
+        print("Answer", '\n', s["Answer"])
+        print("Options", '\n', s["Options"])
+        print("Type", '\n', s["Type"])
+        print()
+    print(len(sents))
+
 
 def gen_sents(doc):
     ents = get_entities(doc)
     w2v_model = gen_word2vec(doc)
-    ent2type,type2ent,counter,sent2ent = map_ents_to_types(ents,doc)
+    ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
     result = []
     for sentID in sent2ent:
-        ent1 = choose_ent(sent2ent[sentID],counter,ent2type)
-        ent2 = choose_ent(sent2ent[sentID],counter,ent2type,True)
-        sentence,sent_len = sentID2sent(sentID,doc)
+        ent1 = choose_ent(sent2ent[sentID], counter, ent2type)
+        ent2 = choose_ent(sent2ent[sentID], counter, ent2type, True)
+        sentence, sent_len = sentID2sent(sentID, doc)
         if sent_len < MIN_SENT_LEN or sent_len > MAX_SENT_LEN:
             continue
         if ent1 == ent2:
-            options = [i for i in type2ent[ent2type[ent1]] if i not in sent2ent[sentID]]+ [ent1]
+            options = [i for i in type2ent[ent2type[ent1]]
+                       if i not in sent2ent[sentID]] + [ent1]
             if len(options) > 3:
-                options = find_best_options(list(options),w2v_model,ent1)[:3]
+                options = find_best_options(list(options), w2v_model, ent1)[:3]
             elif len(options) < 2:
                 continue
-            sample = {"Question":sentence.replace(ent1,"_________"),
-                      "Answer":ent1,
-                      "Options":options,
-                      "Type":ent2type[ent1]}
+            sample = {"Question": sentence.replace(ent1, "_________"),
+                      "Answer": ent1,
+                      "Options": options,
+                      "Type": ent2type[ent1]}
             result.append(sample)
 
         else:
             # For Entity 1
-            options = [i for i in type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
+            options = [i for i in type2ent[ent2type[ent1]]
+                       if i not in sent2ent[sentID]] + [ent1]
             if len(options) > 3:
-                options = find_best_options(list(options),w2v_model,ent1)[:3]
+                options = find_best_options(list(options), w2v_model, ent1)[:3]
             elif len(options) < 2:
                 continue
-            sample = {"Question":sentence.replace(ent1,"_________"),
-                      "Answer":ent1,
-                      "Options":options,
-                      "Type":ent2type[ent1]}
+            sample = {"Question": sentence.replace(ent1, "_________"),
+                      "Answer": ent1,
+                      "Options": options,
+                      "Type": ent2type[ent1]}
             result.append(sample)
 
             # For Entity 2
-            options = [i for i in type2ent[ent2type[ent2]] if i not in sent2ent[sentID]]+ [ent2]
+            options = [i for i in type2ent[ent2type[ent2]]
+                       if i not in sent2ent[sentID]] + [ent2]
             if len(options) > 3:
-                options = find_best_options(list(options),w2v_model,ent2)[:3]
+                options = find_best_options(list(options), w2v_model, ent2)[:3]
             elif len(options) < 2:
                 continue
-            sample = {"Question":sentence.replace(ent2,"_________"),
-                      "Answer":ent2,
-                      "Options":options,
-                      "Type":ent2type[ent2]}
+            sample = {"Question": sentence.replace(ent2, "_________"),
+                      "Answer": ent2,
+                      "Options": options,
+                      "Type": ent2type[ent2]}
             result.append(sample)
     random.shuffle(result)
     return result
