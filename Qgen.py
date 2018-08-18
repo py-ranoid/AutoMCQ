@@ -1,4 +1,24 @@
 import spacy
+import random
+from nltk import word_tokenize
+from gensim.models import Word2Vec
+
+def gen_word2vec(doc):
+    sents = [[y.orth_ for y in x] for x in doc.sents]
+    model = Word2Vec(sents, size=100, window=5, min_count=1, workers=4)
+    return model
+
+def find_best_options(options,w2v_model,answer):
+    source = word_tokenize(answer)
+    distances = {}
+    for opt in options:
+        if opt == answer:continue
+        distance = w2v_model.wmdistance(word_tokenize(opt), source)
+        distances[opt] = distance
+    distances[answer] = 0
+    options.sort(key=lambda x:distances[x])
+    return options
+
 nlp = spacy.load('en_core_web_sm')
 
 text = """
@@ -90,6 +110,7 @@ def choose_ent(ents,counter,ent2type,mul_priority=False,weight=20):
 
 def gen_sents(doc):
     ents = get_entities(doc)
+    w2v_model = gen_word2vec(doc)
     ent2type,type2ent,counter,sent2ent = map_ents_to_types(ents,doc)
     for sentID in sent2ent:
         ent1 = choose_ent(sent2ent[sentID],counter,ent2type)
@@ -100,15 +121,37 @@ def gen_sents(doc):
             print (sentence.replace(ent1,"_________"))
             print ("Answer")
             print (ent1)
+            print ("Options")
+            print ("Type :",ent2type[ent1])
+            options = type2ent[ent2type[ent1]]
+            if len(options) > 2:
+                print (find_best_options(list(options),w2v_model,ent1)[:3])
+            else:
+                print (options)
             print ()
         else:
             print ("Question")
             print (sentence.replace(ent1,"_________"))
             print ("Answer")
             print (ent1)
+            print ("Options")
+            print ("Type :",ent2type[ent1])
+            options = type2ent[ent2type[ent1]]
+            if len(options) > 2:
+                print (find_best_options(list(options),w2v_model,ent1)[:3])
+            else:
+                print (options)
+
             print ()
             print ("Question")
             print (sentence.replace(ent2,"_________"))
             print ("Answer")
             print (ent2)
+            print ("Options")
+            print ("Type :",ent2type[ent2])
+            options = type2ent[ent2type[ent2]]
+            if len(options) > 2:
+                print (find_best_options(list(options),w2v_model,ent2)[:3])
+            else:
+                print (options)
             print ()
