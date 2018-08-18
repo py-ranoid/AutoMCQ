@@ -20,6 +20,8 @@ def find_best_options(options,w2v_model,answer):
     return options
 
 nlp = spacy.load('en_core_web_sm')
+MIN_SENT_LEN = 6
+MAX_SENT_LEN = 25
 
 text = """
 The Battle of Plassey was a decisive victory of the British East India Company over the Nawab of Bengal and his French allies on 23 June 1757. The battle consolidated the Company's presence in Bengal, which later expanded to cover much of India over the next hundred years.
@@ -81,8 +83,8 @@ def map_ents_to_types(ent_list,doc):
 
 
 def sentID2sent(sentID,doc):
-    IDsplit = [int(x) for x in sentID.split("#")]
-    return doc[IDsplit[0]:IDsplit[1]].orth_
+    start,end = [int(x) for x in sentID.split("#")]
+    return doc[start:end].orth_.strip(),end-start
 
 def choose_ent(ents,counter,ent2type,mul_priority=False,weight=20):
     count_map = {}
@@ -107,51 +109,56 @@ def choose_ent(ents,counter,ent2type,mul_priority=False,weight=20):
         else:
             return count_map[temp][0]
 
+def print_results(sents):
+    for s in sents:
+        print ("Question",'\n',s["Question"])
+        print ("Answer",'\n',s["Answer"])
+        print ("Options",'\n',s["Options"])
+        print ("Type",'\n',s["Type"])
+    print (len(sents))
 
 def gen_sents(doc):
     ents = get_entities(doc)
     w2v_model = gen_word2vec(doc)
     ent2type,type2ent,counter,sent2ent = map_ents_to_types(ents,doc)
+    result = []
     for sentID in sent2ent:
         ent1 = choose_ent(sent2ent[sentID],counter,ent2type)
         ent2 = choose_ent(sent2ent[sentID],counter,ent2type,True)
-        sentence = sentID2sent(sentID,doc)
+        sentence,sent_len = sentID2sent(sentID,doc)
+        if sent_len < MIN_SENT_LEN or sent_len > MAX_SENT_LEN:
+            continue
         if ent1 == ent2:
-            print ("Question")
-            print (sentence.replace(ent1,"_________"))
-            print ("Answer")
-            print (ent1)
-            print ("Options")
-            print ("Type :",ent2type[ent1])
             options = type2ent[ent2type[ent1]]
             if len(options) > 2:
-                print (find_best_options(list(options),w2v_model,ent1)[:3])
-            else:
-                print (options)
-            print ()
-        else:
-            print ("Question")
-            print (sentence.replace(ent1,"_________"))
-            print ("Answer")
-            print (ent1)
-            print ("Options")
-            print ("Type :",ent2type[ent1])
-            options = type2ent[ent2type[ent1]]
-            if len(options) > 2:
-                print (find_best_options(list(options),w2v_model,ent1)[:3])
-            else:
-                print (options)
+                options = find_best_options(list(options),w2v_model,ent1)[:3]
 
-            print ()
-            print ("Question")
-            print (sentence.replace(ent2,"_________"))
-            print ("Answer")
-            print (ent2)
-            print ("Options")
-            print ("Type :",ent2type[ent2])
+            sample = {"Question":sentence.replace(ent1,"_________"),
+                      "Answer":ent1,
+                      "Options":options,
+                      "Type":ent2type[ent1]}
+            result.append(sample)
+
+        else:
+            # For Entity 1
+            options = type2ent[ent2type[ent1]]
+            if len(options) > 2:
+                options = find_best_options(list(options),w2v_model,ent1)[:3]
+
+            sample = {"Question":sentence.replace(ent1,"_________"),
+                      "Answer":ent1,
+                      "Options":options,
+                      "Type":ent2type[ent1]}
+            result.append(sample)
+
+            # For Entity 2
             options = type2ent[ent2type[ent2]]
             if len(options) > 2:
-                print (find_best_options(list(options),w2v_model,ent2)[:3])
-            else:
-                print (options)
-            print ()
+                options = find_best_options(list(options),w2v_model,ent2)[:3]
+
+            sample = {"Question":sentence.replace(ent2,"_________"),
+                      "Answer":ent2,
+                      "Options":options,
+                      "Type":ent2type[ent2]}
+            result.append(sample)
+    return result
