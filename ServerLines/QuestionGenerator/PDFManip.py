@@ -1,5 +1,8 @@
 import PyPDF2
 import re
+
+DEFAULT_FILE = 'temp.pdf'
+
 def removeSlashN(content):
     content = content.replace('\n' , ' ')
     content = re.sub(r' +' , ' ' , content)
@@ -8,7 +11,7 @@ def removeSlashN(content):
 def getPdfFileObject(pdf):
     pdfReader = None
     if(pdf == None):
-        pdfFileObj = open('../PDFs/sample_1.pdf', 'rb')
+        pdfFileObj = open(DEFAULT_FILE, 'rb')
         pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
     else:
         pdfReader = PyPDF2.PdfFileReader(pdf)
@@ -29,4 +32,3 @@ def getPageContent(pageNumber , pdf):
     text = removeSlashN(content.extractText())
     print(text)
     return text
-

@@ -10,7 +10,7 @@ pdf_stored = None
 wiki_content = None
 
 CUSTOM_CONTENT = 'content'
-PDF_FILE = 'pdf'
+PDF_FILE = 'file'
 SUCCESS = 'Success'
 FAILURE = 'Failure'
 TOPIC = 'topic'
@@ -18,13 +18,12 @@ QUESTIONS = 'questions'
 
 def resetContents():
     wiki_content = None
-    pdf_stored = None
 
 
 @app.route('/getQuestionsForPdf', methods=['POST'])
 def getQuestionsForPdf():
     req = request.get_json()
-    pageNumber = req[PAGE_NUMBER]
+    pageNumber = int(req[PAGE_NUMBER])
     textContent = manip.getPageContent(pageNumber , None)
     questionsArray = qgen.getQuestions(textContent)
     resp = {}
@@ -34,14 +33,9 @@ def getQuestionsForPdf():
 
 @app.route('/getContentForPdf', methods=['POST'])
 def getContentForPdf():
-    try:
-        resetContents()
-        pdf_stored = request.files[PDF_FILE]
-        #Train word to vec here
-        return jsonify(SUCCESS)
-    except Exception as ex:
-        print(ex)
-        return jsonify(FAILURE)
+    print ('Storing file')
+    request.files['file'].save(manip.DEFAULT_FILE)
+    return jsonify({"status":"success"})
 
 @app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
@@ -59,10 +53,12 @@ def getQuestionsForText():
     content = req[CUSTOM_CONTENT]
     questionArray = qgen.getQuestions(content)
     resp = {}
-    resp[CUSTOM_CONTENT] = content
     resp[QUESTIONS] = questionArray
     return jsonify(resp)
 
 
 if __name__ == '__main__':
-    app.run(debug=True,use_reloader=False) #run app in debug mode on port 5000
+    app.run(debug=True,
+            use_reloader=False,
+            host='0.0.0.0'
+            ) #run app in debug mode on port 5000

@@ -140,6 +140,8 @@ def map_ents_to_types(ent_list, doc):
     sent2ent = {}
     for e in ent_list:
         init = e.start
+        if doc[init].orth_ == '\n':
+            continue
         sent_id = str(e.sent.start) + "#" + str(e.sent.end)
         etype = doc[init].ent_type_
 
