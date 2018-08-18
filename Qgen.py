@@ -16,6 +16,27 @@ doc = nlp(text)
 def get_entities(doc):
     return doc.ents
 
+ENTITY_PRIORITIES = {
+"PERSON":20,
+"NORP":10,
+"FAC":9,
+"ORG":19,
+"GPE":15,
+"LOC":9,
+"PRODUCT":8,
+"EVENT":18,
+"WORK_OF_ART":17,
+"LAW":16,
+"LANGUAGE":0,
+"DATE":14,
+"TIME":1,
+"PERCENT":5,
+"MONEY":8,
+"QUANTITY":7,
+"ORDINAL":6,
+"CARDINAL":2,
+}
+
 def map_ents_to_types(ent_list,doc):
     ent2type = {}
     type2ent = {}
@@ -40,5 +61,54 @@ def map_ents_to_types(ent_list,doc):
 
 
 def sentID2sent(sentID,doc):
-    IDsplit = map(int,sentID.split("#"))
-    return sentID[IDsplit[0]:IDsplit[1]]
+    IDsplit = [int(x) for x in sentID.split("#")]
+    return doc[IDsplit[0]:IDsplit[1]].orth_
+
+def choose_ent(ents,counter,ent2type,mul_priority=False,weight=20):
+    count_map = {}
+    if mul_priority:
+        for e in ents:
+            pri = ENTITY_PRIORITIES[ent2type[e]]
+            count_map[(weight/counter[e])*pri] = [e] + count_map.get(e,[])
+        return count_map[max(count_map.keys())][0]
+    else:
+        for e in ents:
+            count_map[counter[e]] = [e] + count_map.get(e,[])
+        temp = min(count_map.keys())
+        if len(count_map[temp]) > 1:
+            fin = None
+            max_pri = 0
+            for x in count_map[temp]:
+                pri = ENTITY_PRIORITIES[ent2type[x]]
+                if max_pri > pri:
+                    fin = x
+                    max_pri = pri
+            return fin
+        else:
+            return count_map[temp][0]
+
+
+def gen_sents(doc):
+    ents = get_entities(doc)
+    ent2type,type2ent,counter,sent2ent = map_ents_to_types(ents,doc)
+    for sentID in sent2ent:
+        ent1 = choose_ent(sent2ent[sentID],counter,ent2type)
+        ent2 = choose_ent(sent2ent[sentID],counter,ent2type,True)
+        sentence = sentID2sent(sentID,doc)
+        if ent1 == ent2:
+            print ("Question")
+            print (sentence.replace(ent1,"_________"))
+            print ("Answer")
+            print (ent1)
+            print ()
+        else:
+            print ("Question")
+            print (sentence.replace(ent1,"_________"))
+            print ("Answer")
+            print (ent1)
+            print ()
+            print ("Question")
+            print (sentence.replace(ent2,"_________"))
+            print ("Answer")
+            print (ent2)
+            print ()
