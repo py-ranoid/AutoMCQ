@@ -22,16 +22,12 @@ def resetContents():
 
 @app.route('/getQuestionsForPdf', methods=['POST'])
 def getQuestionsForPdf():
-    # req = request.get_json()
-    # pageNumber = int(req[PAGE_NUMBER])
     pageNumber = int(request.form[PAGE_NUMBER].replace('\r\n',' ').replace('\n','')) - 1
     print (pageNumber)
     textContent = manip.getPageContent(pageNumber , None)
-    print (textContent)
+    # print (textContent)
     questionsArray = qgen.getQuestions(textContent)
     resp = {}
-    # resp[PAGE_NUMBER] = pageNumber
-    # resp[QUESTIONS] = questionsArray
     print (questionsArray)
     return jsonify(questionsArray)
 
@@ -43,8 +39,7 @@ def getContentForPdf():
 
 @app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
-    req = request.get_json()
-    topic = req[TOPIC]
+    topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
     resetContents()
     content_tree , wiki_content = wiki.getTreeForGivenTopic(topic)
     #train word to vec here
