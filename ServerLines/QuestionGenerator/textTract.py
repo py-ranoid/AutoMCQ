@@ -6,6 +6,7 @@ DEFAULT_FILE = 'temp.pdf'
 def removeSlashN(content):
     content = content.replace('\n' , ' ')
     content = re.sub(r' +' , ' ' , content)
+    content = content.replace('\"' , '')
     return content
 
 def getPdfFileObject(pdf):

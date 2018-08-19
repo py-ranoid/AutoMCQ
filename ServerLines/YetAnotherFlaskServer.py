@@ -47,7 +47,6 @@ def getContentForTopic():
     topic = req[TOPIC]
     resetContents()
     content_tree , wiki_content = wiki.getTreeForGivenTopic(topic)
-    content_tree[TOPIC] = topic
     #train word to vec here
     return jsonify(content_tree)
 

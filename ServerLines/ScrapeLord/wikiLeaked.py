@@ -30,12 +30,17 @@ def getTreeFromContent(content):
         i+=2
 
     paragraph = ''
+    androidStyle = []
     for key , value in wikiContent.items():
         paragraph += value
         paragraph += '. '
         print(key +': '+ value)
+        androidStyle.append({
+            'topicName': key,
+            'topicContent': value
+        })
 
-    return wikiContent , paragraph
+    return androidStyle , paragraph
 
 def getTreeForGivenTopic(topic):
     content = getPageContent(topic)
