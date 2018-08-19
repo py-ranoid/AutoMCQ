@@ -1,8 +1,8 @@
-import spacy
+# import spacy
 import random
-from nltk import word_tokenize,sent_tokenize
+# from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
-from gensim.models import Word2Vec
+# from gensim.models import Word2Vec
 from re import findall
 
 nlp = spacy.load('en_core_web_sm')
