@@ -217,6 +217,7 @@ def gen_sents(doc,limit=20):
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
             elif len(options) < 3:
                 continue
+            random.shuffle(options)
             sample = {"Question": sentence.replace(ent1, "_________"),
                       "Answer": ent1,
                       "Options": options,
@@ -231,6 +232,7 @@ def gen_sents(doc,limit=20):
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
             elif len(options) < 3:
                 continue
+            random.shuffle(options)
             sample = {"Question": sentence.replace(ent1, "_________"),
                       "Answer": ent1,
                       "Options": options,
@@ -244,6 +246,7 @@ def gen_sents(doc,limit=20):
                 options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2])[:3]
             elif len(options) < 3:
                 continue
+            random.shuffle(options)
             sample = {"Question": sentence.replace(ent2, "_________"),
                       "Answer": ent2,
                       "Options": options,
