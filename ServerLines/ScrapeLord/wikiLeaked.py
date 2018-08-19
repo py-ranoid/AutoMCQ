@@ -34,7 +34,7 @@ def getTreeFromContent(content):
     for key , value in wikiContent.items():
         paragraph += value
         paragraph += '. '
-        print(key ,': ', value)
+        print(key +': '+ value)
 
     return wikiContent , paragraph
 
@@ -44,4 +44,4 @@ def getTreeForGivenTopic(topic):
     return tree , para
 
 
-getTreeForGivenTopic('linux')
+# getTreeForGivenTopic('android os')
