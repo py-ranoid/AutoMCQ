@@ -50,11 +50,12 @@ def getContentForTopic():
 @app.route('/getQuestionsForText', methods=['POST'])
 def getQuestionsForText():
     req = request.get_json()
-    content = req[CUSTOM_CONTENT]
+    content = request.form['content'].replace('\r\n',' ').replace('\n','')
     questionArray = qgen.getQuestions(content)
-    resp = {}
-    resp[QUESTIONS] = questionArray
-    return jsonify(resp)
+    # print (questionArray)
+    # resp = {}
+    # resp[QUESTIONS] =
+    return jsonify(questionArray)
 
 
 if __name__ == '__main__':
