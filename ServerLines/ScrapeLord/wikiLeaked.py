@@ -17,7 +17,6 @@ def getPageContent(topic):
 
 
 def getTreeFromContent(content):
-    content = re.sub(r'(={3,8})(.+)(={3,8})' , ' ' , content)
     content = manip.removeSlashN(content)
     allTopics = content.split(' == ')
 
