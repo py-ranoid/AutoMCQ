@@ -42,6 +42,7 @@ def getContentForTopic():
     topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
     resetContents()
     content_tree , wiki_content = wiki.getTreeForGivenTopic(topic)
+    # print (content_tree)
     #train word to vec here
     return jsonify(content_tree)
 
