@@ -1,16 +1,11 @@
-import PyPDF2
+import textract
 import re
 
 DEFAULT_FILE = 'temp.pdf'
 
-def performSmartCorrections(content):
-    content = re.sub(r'([a-zA-Z])\.([a-zA-Z0-9])' , r'\1. \2' , content)
-    return content
-
 def removeSlashN(content):
     content = content.replace('\n' , ' ')
     content = re.sub(r' +' , ' ' , content)
-    content = performSmartCorrections(content)
     return content
 
 def getPdfFileObject(pdf):
@@ -37,5 +32,3 @@ def getPageContent(pageNumber , pdf):
     text = removeSlashN(content.extractText())
     # print(text)
     return text
-
-# performSmartCorrections('ggwp.well played.nonono.6.9.')

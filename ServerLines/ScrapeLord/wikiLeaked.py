@@ -26,14 +26,14 @@ def getTreeFromContent(content):
         if(len(allTopics[i]) >= 3 and len(allTopics[i+1]) >= 10 ):
             value = manip.removeSlashN(allTopics[i+1]).replace('\"','')
             if len(value)>200:
-                wikiContent[allTopics[i].replace("=",'').strip()] = value
+                wikiContent[allTopics[i].replace("=",'').strip()] = re.sub(r'(={1,10})(.+)(={1,10})' , ' ' ,value).strip()
         i+=2
 
     paragraph = ''
     for key , value in wikiContent.items():
         paragraph += value
         paragraph += '. '
-        print(key ,': ', value)
+        print(key +': '+ value)
 
     return wikiContent , paragraph
 
@@ -43,4 +43,4 @@ def getTreeForGivenTopic(topic):
     return tree , para
 
 
-# getTreeForGivenTopic('cryptocurrency')
+# getTreeForGivenTopic('android os')
