@@ -1,7 +1,6 @@
 import wikipedia
 import QuestionGenerator.PDFManip as manip
 import re
-import QuestionGenerator.PDFManip as manip
 
 def getRightTitle(error):
     values = error.split('\n')

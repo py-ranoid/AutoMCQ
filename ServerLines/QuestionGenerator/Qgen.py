@@ -1,12 +1,12 @@
-# import spacy
+import spacy
 import random
-# from nltk import word_tokenize,sent_tokenize
+from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
-# from gensim.models import Word2Vec
+from gensim.models import Word2Vec
 from re import findall
 
 nlp = spacy.load('en_core_web_sm')
-MIN_SENT_LEN = 6
+MIN_SENT_LEN = 8
 MAX_SENT_LEN = 25
 TEST_TEXT = """
 The Battle of Plassey was a decisive victory of the British East India Company over the Nawab of Bengal and his French allies on 23 June 1757. The battle consolidated the Company's presence in Bengal, which later expanded to cover much of India over the next hundred years.

@@ -22,14 +22,18 @@ def resetContents():
 
 @app.route('/getQuestionsForPdf', methods=['POST'])
 def getQuestionsForPdf():
-    req = request.get_json()
-    pageNumber = int(req[PAGE_NUMBER])
+    # req = request.get_json()
+    # pageNumber = int(req[PAGE_NUMBER])
+    pageNumber = int(request.form[PAGE_NUMBER].replace('\r\n',' ').replace('\n','')) - 1
+    print (pageNumber)
     textContent = manip.getPageContent(pageNumber , None)
+    print (textContent)
     questionsArray = qgen.getQuestions(textContent)
     resp = {}
-    resp[PAGE_NUMBER] = pageNumber
-    resp[QUESTIONS] = questionsArray
-    return jsonify(resp)
+    # resp[PAGE_NUMBER] = pageNumber
+    # resp[QUESTIONS] = questionsArray
+    print (questionsArray)
+    return jsonify(questionsArray)
 
 @app.route('/getContentForPdf', methods=['POST'])
 def getContentForPdf():
@@ -49,7 +53,6 @@ def getContentForTopic():
 
 @app.route('/getQuestionsForText', methods=['POST'])
 def getQuestionsForText():
-    req = request.get_json()
     content = request.form['content'].replace('\r\n',' ').replace('\n','')
     questionArray = qgen.getQuestions(content)
     # print (questionArray)
