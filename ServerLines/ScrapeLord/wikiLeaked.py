@@ -26,7 +26,9 @@ def getTreeFromContent(content):
     i = 1
     while i < len(allTopics) - 1:
         if(len(allTopics[i]) >= 3 and len(allTopics[i+1]) >= 10 ):
-            wikiContent[allTopics[i]] = manip.removeSlashN(allTopics[i+1])
+            value = manip.removeSlashN(allTopics[i+1]).replace('\"','')
+            if len(value)>200:
+                wikiContent[allTopics[i].replace("=",'').strip()] = value
         i+=2
 
     paragraph = ''

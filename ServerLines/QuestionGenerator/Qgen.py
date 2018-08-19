@@ -198,7 +198,7 @@ def print_results(sents):
     print(len(sents))
 
 
-def gen_sents(doc):
+def gen_sents(doc,limit=20):
     ents = get_entities(doc)
     w2v_model = gen_word2vec(doc)
     ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
@@ -249,6 +249,8 @@ def gen_sents(doc):
                       "Options": options,
                       "Type": ent2type[ent2]}
             result.append(sample)
+    result.sort(key=lambda x:ENTITY_PRIORITIES[x['Type']])
+    result = result[:limit]
     random.shuffle(result)
     return result
 

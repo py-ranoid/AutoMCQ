@@ -30,5 +30,5 @@ def getPageContent(pageNumber , pdf):
     pdfReader = getPdfFileObject(pdf)
     content = pdfReader.getPage(pageNumber)
     text = removeSlashN(content.extractText())
-    print(text)
+    # print(text)
     return text
