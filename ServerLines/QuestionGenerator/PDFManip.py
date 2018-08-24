@@ -5,6 +5,9 @@ DEFAULT_FILE = 'temp.pdf'
 
 def performSmartCorrections(content):
     content = re.sub(r'([a-zA-Z])\.([a-zA-Z0-9])' , r'\1. \2' , content)
+    content = content.replace('\"' , '')
+    content = content.replace('"' , '')
+    print(content)
     return content
 
 def removeSlashN(content):
@@ -38,4 +41,4 @@ def getPageContent(pageNumber , pdf):
     # print(text)
     return text
 
-# performSmartCorrections('ggwp.well played.nonono.6.9.')
+performSmartCorrections('ggwp.well played.nonono.6.9. This is awesome " \' " he said')
