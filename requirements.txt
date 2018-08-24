@@ -4,3 +4,4 @@ PyPDF2==1.26.0
 gensim==3.5.0
 spacy==2.0.12
 wikipedia==1.4.0
+pyemd==0.5.1

@@ -9,12 +9,11 @@ def getRightTitle(error):
 def getPageContent(topic):
     try:
         content = wikipedia.WikipediaPage(title= topic, )
-        return manip.removeSlashN(content.content)
+        return topic, manip.removeSlashN(content.content)
     except Exception as ex:
-        # print('Error: ' , str(ex))
-        content = getPageContent(getRightTitle(str(ex)))
-        # print ('___',content)
-        return content
+        print('Error: ', str(ex))
+        topic, content = getPageContent(getRightTitle(str(ex)))
+        return topic, content
 
 
 def getTreeFromContent(content):
@@ -36,18 +35,17 @@ def getTreeFromContent(content):
     for key , value in wikiContent.items():
         paragraph += value
         paragraph += '. '
-        # print(key +': '+ value)
         androidStyle.append({
             'topicName': key,
             'topicContent': value
         })
 
-    return androidStyle , paragraph
+    return androidStyle, paragraph
 
 def getTreeForGivenTopic(topic):
-    content = getPageContent(topic)
-    tree , para = getTreeFromContent(content)
-    return tree , para
+    topic, content = getPageContent(topic)
+    tree, para = getTreeFromContent(content)
+    return tree, para
 
 
-# getTreeForGivenTopic('android os')
+print (getTreeForGivenTopic('android'))

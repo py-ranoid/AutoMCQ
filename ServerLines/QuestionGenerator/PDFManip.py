@@ -4,13 +4,14 @@ import re
 DEFAULT_FILE = 'temp.pdf'
 
 def performSmartCorrections(content):
-    content = re.sub(r'([a-zA-Z])\.([a-zA-Z0-9])' , r'\1. \2' , content)
+    # content = re.sub(r'([a-zA-Z])\.([a-zA-Z0-9])' , r'\1. \2' , content)
     content = content.replace('\"' , '')
     content = content.replace('"' , '')
     # print(content)
     return content
 
 def removeSlashN(content):
+    content = str(content)
     content = content.replace('\n' , ' ')
     content = re.sub(r' +' , ' ' , content)
     content = performSmartCorrections(content)
