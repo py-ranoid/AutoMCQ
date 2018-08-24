@@ -5,7 +5,7 @@ RUN apk update \
     && apk add py3-pip \
     && pip install --no-cache-dir -r requirements.txt \
     && python -m nltk.downloader 'punkt' \
-    && python -m spacy download en \
+    && python -m spacy download en
 EXPOSE 5000
 # ADD ./ServerLines /server
 COPY ./ServerLines /server
