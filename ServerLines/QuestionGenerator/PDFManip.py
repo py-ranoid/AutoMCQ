@@ -42,4 +42,4 @@ def getPageContent(pageNumber , pdf):
     # print(text)
     return text
 
-performSmartCorrections('ggwp.well played.nonono.6.9. This is awesome " \' " he said')
+# performSmartCorrections('ggwp.well played.nonono.6.9. This is awesome " \' " he said')

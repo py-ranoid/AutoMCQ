@@ -12,10 +12,10 @@ wiki_content = None
 
 CUSTOM_CONTENT = 'content'
 PDF_FILE = 'file'
-SUCCESS = 'Success'
-FAILURE = 'Failure'
 TOPIC = 'topic'
 QUESTIONS = 'questions'
+NO_QUESTIONS = 'No Questions Generated'
+USER_ID = 'uid'
 
 def resetContents():
     wiki_content = None
@@ -25,7 +25,7 @@ def resetContents():
 def getQuestionsForPdf():
     pageNumber = int(request.form[PAGE_NUMBER].replace('\r\n',' ').replace('\n','')) - 1
     print (pageNumber)
-    textContent = manip.getPageContent(pageNumber , None)
+    textContent = manip.getPageContent(pageNumber, None)
     questionsArray = qgen.getQuestions(textContent)
     print (questionsArray)
     return jsonify(questionsArray)
@@ -43,18 +43,34 @@ def getContentForPdf():
 def getContentForTopic():
     try:
         topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
+        userid = request.form[USER_ID]
         resetContents()
-        content_tree , wiki_content = wiki.getTreeForGivenTopic(topic)
-        return jsonify(content_tree)
+        content_tree, wiki_content, topic = wiki.getTreeForGivenTopic(topic)
+
+        response = {}
+        response[CUSTOM_CONTENT] = content_tree
+        response[USER_ID] = userid
+        response[TOPIC] = topic
+
+        print(response)
+        return jsonify(response)
     except Exception as ex:
         raise ServerError(str(ex), status_code=400)
 
 @app.route('/getQuestionsForText', methods=['POST'])
 def getQuestionsForText():
     try:
-        content = request.form['content'].replace('\r\n',' ').replace('\n','')
+        content = request.form[CUSTOM_CONTENT].replace('\r\n',' ').replace('\n','')
+        userid = request.form[USER_ID]
         questionArray = qgen.getQuestions(content)
-        return jsonify(questionArray)
+        if(len(questionArray) > 0):
+            response = {}
+            response[QUESTIONS] = questionArray
+            response[USER_ID] = userid
+            print(response)
+            return jsonify(response)
+        else:
+            raise ServerError(NO_QUESTIONS, status_code=200)
     except Exception as ex:
         raise ServerError(str(ex), status_code=400)
 

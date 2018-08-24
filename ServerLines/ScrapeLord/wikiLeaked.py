@@ -45,7 +45,7 @@ def getTreeFromContent(content):
 def getTreeForGivenTopic(topic):
     topic, content = getPageContent(topic)
     tree, para = getTreeFromContent(content)
-    return tree, para
+    return tree, para, topic
 
 
-print (getTreeForGivenTopic('android'))
+# print (getTreeForGivenTopic('android'))
