@@ -11,8 +11,10 @@ def getPageContent(topic):
         content = wikipedia.WikipediaPage(title= topic, )
         return manip.removeSlashN(content.content)
     except Exception as ex:
-        print('Error: ' , str(ex))
-        return getPageContent(getRightTitle(str(ex)))
+        # print('Error: ' , str(ex))
+        content = getPageContent(getRightTitle(str(ex)))
+        # print ('___',content)
+        return content
 
 
 def getTreeFromContent(content):
@@ -34,7 +36,7 @@ def getTreeFromContent(content):
     for key , value in wikiContent.items():
         paragraph += value
         paragraph += '. '
-        print(key +': '+ value)
+        # print(key +': '+ value)
         androidStyle.append({
             'topicName': key,
             'topicContent': value
