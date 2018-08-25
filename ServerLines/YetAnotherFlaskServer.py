@@ -19,7 +19,7 @@ SUCCESS = 'Success'
 FAILURE = 'Failure'
 TOPIC = 'topic'
 QUESTIONS = 'questions'
-USER_ID = 'uid'
+USER_ID = 'user'
 SCORE = 'score'
 ANSWER_RATING = 'answerRating'
 QUESTION_RATING = 'questionRating'
@@ -47,10 +47,10 @@ def resetContents():
 
 @app.route('/addTime', methods=['POST'])
 def addTime():
-    score = request.form[SCORE].replace('\r\n',' ').replace('\n','')
-    answerRating = request.form[ANSWER_RATING].replace('\r\n',' ').replace('\n','')
-    questionRating = request.form[QUESTION_RATING].replace('\r\n',' ').replace('\n','')
-    uid = loads(request.form[USER_ID].replace('\r\n',' ').replace('\n',''))
+    score = manip.removeSlashN(request.form[SCORE])
+    answerRating = manip.removeSlashN(request.form[ANSWER_RATING])
+    questionRating = manip.removeSlashN(request.form[QUESTION_RATING])
+    uid = loads(manip.removeSlashN(request.form[USER_ID]))
     resp = insert_rev(uid,answerRating,questionRating,score)
     print (resp)
     return jsonify({"SUCCESS":True})
@@ -59,10 +59,10 @@ def addTime():
 @app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
     try:
-        topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
+        topic = manip.removeSlashN(request.form[TOPIC])
         print(topic)
         init_time = time.time()
-        uid = loads(request.form[USER_ID].replace('\r\n', ' ').replace('\n', ''))
+        uid = loads(manip.removeSlashN(request.form[USER_ID]))
         resp = insert(uid, 'TOPI2QUIZ', "LENGTH" + "::" + str(len(topic)) + "::" + topic)
         print(resp)
 
@@ -84,8 +84,8 @@ def getContentForTopic():
 def getQuestionsForText():
 
     try:
-        content = request.form[CUSTOM_CONTENT].replace('\r\n',' ').replace('\n','')
-        uid = loads(request.form[USER_ID].replace('\r\n', ' ').replace('\n', ''))
+        content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
+        uid = manip.removeSlashN(loads(request.form[USER_ID]))
         print(uid)
 
         resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])

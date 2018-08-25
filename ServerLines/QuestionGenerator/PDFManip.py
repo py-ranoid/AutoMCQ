@@ -11,10 +11,11 @@ def performSmartCorrections(content):
     return content
 
 def removeSlashN(content):
-    content = str(content)
+    content = unicode(content)
+    content = content.replace('\r\n',' ')
     content = content.replace('\n' , ' ')
     content = re.sub(r' +' , ' ' , content)
-    content = performSmartCorrections(content)
+    # content = performSmartCorrections(content)
     return content
 
 def getPdfFileObject(pdf):
