@@ -39,6 +39,23 @@ def getContentForPdf():
     request.files['file'].save(manip.DEFAULT_FILE)
     return jsonify({"status":"success"})
 
+@app.route('/addTime', methods=['POST'])
+def addTime():
+    score = request.form['score'].replace('\r\n',' ').replace('\n','')
+    answerRating = request.form['answerRating'].replace('\r\n',' ').replace('\n','')
+    questionRating = request.form['questionRating'].replace('\r\n',' ').replace('\n','')
+    UID = loads(request.form['user'].replace('\r\n',' ').replace('\n',''))
+    # init_time = time.time()
+    # resp = insert(UID,'TOPI2QUIZ',"LENGTH"+"::"+str(len(topic))+"::"+topic)
+    # print (resp)
+    # print ("INS_time :",time.time()-init_time)
+    # content_tree , wiki_content = wiki.getTreeForGivenTopic(topic)
+    # print ("CON_time :".time.time()-init_time)
+    # print (content_tree)
+    #train word to vec here
+    return jsonify({"SUCCESS":True})
+
+
 @app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
     topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
