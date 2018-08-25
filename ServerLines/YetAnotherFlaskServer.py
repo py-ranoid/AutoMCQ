@@ -2,7 +2,8 @@ from flask import Flask, request , jsonify
 import QuestionGenerator.PDFManip as manip
 import ScrapeLord.wikiLeaked as wiki
 import QuestionGenerator.Qgen as qgen
-from DBops.crud import insert
+from DBops.crud import insert,get_query
+import time
 
 app = Flask(__name__)
 PAGE_NUMBER = 'pageNumber'
@@ -42,9 +43,13 @@ def getContentForPdf():
 def getContentForTopic():
     topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
     UID = request.form['uid'].replace('\r\n',' ').replace('\n','')
+    init_time = time.time()
     resetContents()
-    insert(UID,'TOPI2QUIZ',"LENGTH"+"::"+str(len(topic))+"::"+topic)
+    resp = insert(UID,'TOPI2QUIZ',"LENGTH"+"::"+str(len(topic))+"::"+topic)
+    print (resp)
+    print ("INS_time :",time.time()-init_time)
     content_tree , wiki_content = wiki.getTreeForGivenTopic(topic)
+    print ("CON_time :".time.time()-init_time)
     # print (content_tree)
     #train word to vec here
     return jsonify(content_tree)
@@ -53,8 +58,13 @@ def getContentForTopic():
 def getQuestionsForText():
     content = request.form['content'].replace('\r\n',' ').replace('\n','')
     UID = request.form['uid'].replace('\r\n',' ').replace('\n','')
-    insert(UID,'TEXT2QUIZ',"LENGTH"+"::"+str(len(content))+"::"+content[:20])
+    init_time = time.time()
+    resp = insert(UID,'TEXT2QUIZ',"LENGTH"+"::"+str(len(content))+"::"+content[:20])
+    print (resp)
+    print ("INS_time :",time.time()-init_time)
+    #print (get_query(UID,'TEXT2QUIZ'+"::"+"LENGTH"+"::"+str(len(content))+"::"+content[:20]))
     questionArray = qgen.getQuestions(content)
+    print ("QUE_time :",time.time()-init_time)
     # print (questionArray)
     # resp = {}
     # resp[QUESTIONS] =

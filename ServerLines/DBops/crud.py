@@ -8,7 +8,7 @@ mutation insert_logs {
   insert_logs(
     objects: [
       {
-        UID: XXX,
+        UID: "XXX",
         info: "YYY",
       }
     ]
