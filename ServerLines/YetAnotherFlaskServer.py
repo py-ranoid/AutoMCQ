@@ -37,7 +37,7 @@ def getContentForPdf():
     request.files['file'].save(manip.DEFAULT_FILE)
     return jsonify({"status":"success"})
 
-@app.route('/', methods=['POST'])
+@app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
     topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
     resetContents()
