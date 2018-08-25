@@ -3,18 +3,17 @@ MAINTAINER vsundar17697@outlook.com
 
 RUN apk update
 RUN apk add py3-pip
+COPY ./requirements.txt /requirements.txt
+
 RUN pip3 install --upgrade pip \
-    && pip3 install --no-cache-dir nltk==3.3 \
-    Flask==1.0.2 \
-    PyPDF2==1.26.0 \
-    gensim==3.5.0 \
-    spacy==2.0.12 \
-    wikipedia==1.4.0 \
-    pyemd==0.5.1 \
+    && pip3 install --no-cache-dir -r requirements.txt \
     && python3 -m nltk.downloader 'punkt' \
     && python3 -m spacy download en
-EXPOSE 5000
-# ADD ./ServerLines /server
+
+RUN rm -rf requirements.txt
 COPY ./ServerLines /server
 WORKDIR /server
+
+EXPOSE 5000
+ENV DB_URL=https://graphql-on-pg.herokuapp.com/v1alpha1/graphql
 CMD ["python3 YetAnotherFlaskServer.py"]
