@@ -68,7 +68,7 @@ def getContentForTopic():
 
         print ("INS_time :", time.time() - init_time)
         content_tree, wiki_content, topic = wiki.getTreeForGivenTopic(topic)
-        print ("CON_time :".time.time() - init_time)
+        print ("CON_time :",time.time() - init_time)
 
         response = {}
         response[CUSTOM_CONTENT] = content_tree
