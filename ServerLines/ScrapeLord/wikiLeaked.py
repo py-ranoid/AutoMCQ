@@ -1,10 +1,15 @@
 import wikipedia
 import QuestionGenerator.PDFManip as manip
 import re
+from YetAnotherException import ServerError
 
 def getRightTitle(error):
     values = error.split('\n')
-    return values[1]
+    print(values)
+    try:
+        return values[1]
+    except Exception as ex:
+        return None
 
 def getPageContent(topic):
     try:
@@ -12,8 +17,13 @@ def getPageContent(topic):
         return topic, manip.removeSlashN(content.content)
     except Exception as ex:
         print('Error: ', str(ex))
-        topic, content = getPageContent(getRightTitle(str(ex)))
-        return topic, content
+        nextTitle = getRightTitle(str(ex))
+        if nextTitle != None:
+            topic, content = getPageContent()
+            return topic, content
+        else:
+            raise Exception('Topic Not Found')
+
 
 
 def getTreeFromContent(content):
@@ -43,9 +53,13 @@ def getTreeFromContent(content):
     return androidStyle, paragraph
 
 def getTreeForGivenTopic(topic):
-    topic, content = getPageContent(topic)
-    tree, para = getTreeFromContent(content)
-    return tree, para, topic
+    try:
+        topic, content = getPageContent(topic)
+        tree, para = getTreeFromContent(content)
+        return tree, para, topic
+    except Exception as ex:
+        print(str(ex))
+        raise ex
 
 
 # print (getTreeForGivenTopic('android'))
