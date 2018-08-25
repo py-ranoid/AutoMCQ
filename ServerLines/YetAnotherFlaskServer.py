@@ -22,7 +22,6 @@ QUESTIONS = 'questions'
 def resetContents():
     wiki_content = None
 
-
 @app.route('/getQuestionsForPdf', methods=['POST'])
 def getQuestionsForPdf():
     pageNumber = int(request.form[PAGE_NUMBER].replace('\r\n',' ').replace('\n','')) - 1
@@ -43,8 +42,7 @@ def getContentForPdf():
 @app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
     topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
-    UID = request.form['user'].replace('\r\n',' ').replace('\n','')
-    print (UID)
+    UID = loads(request.form['user'].replace('\r\n',' ').replace('\n',''))['name']
     init_time = time.time()
     resetContents()
     resp = insert(UID,'TOPI2QUIZ',"LENGTH"+"::"+str(len(topic))+"::"+topic)
@@ -60,7 +58,6 @@ def getContentForTopic():
 def getQuestionsForText():
     content = request.form['content'].replace('\r\n',' ').replace('\n','')
     UID = loads(request.form['user'].replace('\r\n',' ').replace('\n',''))['name']
-    print (UID)
     init_time = time.time()
     resp = insert(UID,'TEXT2QUIZ',"LENGTH"+"::"+str(len(content))+"::"+content[:20])
     print (resp)

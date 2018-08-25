@@ -1,15 +1,18 @@
 import requests
 import os
+from string import Template
 
 URL = os.environ.get("DB_URL")
 
-query_template = """
+query_string = """
 mutation insert_logs {
   insert_logs(
     objects: [
       {
-        UID: "XXX",
-        info: "YYY",
+        UID: "$uid",
+        email: "$email",
+        name:"$name"
+        info: "$info",
       }
     ]
   ) {
@@ -20,12 +23,16 @@ mutation insert_logs {
   }
 }
 """.strip()
+query_template = Template(query_string)
 
-def get_query(uid,info):
-    return query_template.replace("XXX",uid).replace("YYY",info)
+def get_query(user,info):
+    return query_template.substitute(uid = user['id'],
+                                     name=user['name'],
+                                     info=info,
+                                     email=user['mailId'])
 
-def insert(uid,log_type,content):
-    query = get_query(uid,log_type+"::"+content)
+def insert(user,log_type,content):
+    query = get_query(user,log_type+"::"+content)
     json_query = {
         "operationName":"insert_logs",
         "query":query,
