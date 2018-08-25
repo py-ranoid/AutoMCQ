@@ -87,9 +87,9 @@ def getQuestionsForText():
         content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
         uid = manip.removeSlashN(loads(request.form[USER_ID]))
         print('User id:' , uid)
-        resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])
+        # resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])
         init_time = time.time()
-        print (resp)
+        # print (resp)
         print ("INS_time :", time.time() - init_time)
 
         questionArray = qgen.getQuestions(content)
