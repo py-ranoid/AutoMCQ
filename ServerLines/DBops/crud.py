@@ -26,7 +26,7 @@ mutation insert_logs {
 query_template = Template(query_string)
 
 def get_query(user,info):
-    return query_template.substitute(uid = user['id'],
+    return query_template.substitute(uid = user['uid'],
                                      name=user['name'],
                                      info=info,
                                      email=user['mailId'])

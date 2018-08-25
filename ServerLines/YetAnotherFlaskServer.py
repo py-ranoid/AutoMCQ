@@ -42,7 +42,7 @@ def getContentForPdf():
 @app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
     topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
-    UID = loads(request.form['user'].replace('\r\n',' ').replace('\n',''))['name']
+    UID = loads(request.form['user'].replace('\r\n',' ').replace('\n',''))
     init_time = time.time()
     resetContents()
     resp = insert(UID,'TOPI2QUIZ',"LENGTH"+"::"+str(len(topic))+"::"+topic)
@@ -57,7 +57,8 @@ def getContentForTopic():
 @app.route('/getQuestionsForText', methods=['POST'])
 def getQuestionsForText():
     content = request.form['content'].replace('\r\n',' ').replace('\n','')
-    UID = loads(request.form['user'].replace('\r\n',' ').replace('\n',''))['name']
+    UID = loads(request.form['user'].replace('\r\n',' ').replace('\n',''))
+    print (UID)
     init_time = time.time()
     resp = insert(UID,'TEXT2QUIZ',"LENGTH"+"::"+str(len(content))+"::"+content[:20])
     print (resp)
