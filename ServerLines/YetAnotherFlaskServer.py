@@ -2,6 +2,7 @@ from flask import Flask, request , jsonify
 import QuestionGenerator.PDFManip as manip
 import ScrapeLord.wikiLeaked as wiki
 import QuestionGenerator.Qgen as qgen
+from DBops.crud import insert
 
 app = Flask(__name__)
 PAGE_NUMBER = 'pageNumber'
@@ -40,7 +41,9 @@ def getContentForPdf():
 @app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
     topic = request.form[TOPIC].replace('\r\n',' ').replace('\n','')
+    UID = request.form['uid'].replace('\r\n',' ').replace('\n','')
     resetContents()
+    insert(UID,'TOPI2QUIZ',"LENGTH"+"::"+str(len(topic))+"::"+topic)
     content_tree , wiki_content = wiki.getTreeForGivenTopic(topic)
     # print (content_tree)
     #train word to vec here
@@ -49,6 +52,8 @@ def getContentForTopic():
 @app.route('/getQuestionsForText', methods=['POST'])
 def getQuestionsForText():
     content = request.form['content'].replace('\r\n',' ').replace('\n','')
+    UID = request.form['uid'].replace('\r\n',' ').replace('\n','')
+    insert(UID,'TEXT2QUIZ',"LENGTH"+"::"+str(len(content))+"::"+content[:20])
     questionArray = qgen.getQuestions(content)
     # print (questionArray)
     # resp = {}
