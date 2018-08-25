@@ -2,7 +2,7 @@ from flask import Flask, request , jsonify
 import QuestionGenerator.PDFManip as manip
 import ScrapeLord.wikiLeaked as wiki
 import QuestionGenerator.Qgen as qgen
-from DBops.crud import insert,get_query
+from DBops.crud import insert,insert_rev
 from json import loads
 import time
 
@@ -45,14 +45,8 @@ def addTime():
     answerRating = request.form['answerRating'].replace('\r\n',' ').replace('\n','')
     questionRating = request.form['questionRating'].replace('\r\n',' ').replace('\n','')
     UID = loads(request.form['user'].replace('\r\n',' ').replace('\n',''))
-    # init_time = time.time()
-    # resp = insert(UID,'TOPI2QUIZ',"LENGTH"+"::"+str(len(topic))+"::"+topic)
-    # print (resp)
-    # print ("INS_time :",time.time()-init_time)
-    # content_tree , wiki_content = wiki.getTreeForGivenTopic(topic)
-    # print ("CON_time :".time.time()-init_time)
-    # print (content_tree)
-    #train word to vec here
+    resp = insert_rev(UID,answerRating,questionRating,score)
+    print (resp)
     return jsonify({"SUCCESS":True})
 
 
