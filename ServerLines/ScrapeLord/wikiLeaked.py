@@ -19,7 +19,7 @@ def getPageContent(topic):
         print('Error: ', str(ex))
         nextTitle = getRightTitle(str(ex))
         if nextTitle != None:
-            topic, content = getPageContent()
+            topic, content = getPageContent(nextTitle)
             return topic, content
         else:
             raise Exception('Topic Not Found')
