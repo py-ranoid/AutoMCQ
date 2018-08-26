@@ -1,21 +1,23 @@
 import PyPDF2
 import re
+import sys
 
 DEFAULT_FILE = 'temp.pdf'
 
 def performSmartCorrections(content):
-    # content = re.sub(r'([a-zA-Z])\.([a-zA-Z0-9])' , r'\1. \2' , content)
     content = content.replace('\"' , '')
     content = content.replace('"' , '')
-    # print(content)
+    content = removeSlashN(content)
     return content
 
 def removeSlashN(content):
-    content = unicode(content)
+    if sys.version_info[0]  < 3:
+        content = unicode(content)
+    else:
+        content = str(content)
     content = content.replace('\r\n',' ')
     content = content.replace('\n' , ' ')
     content = re.sub(r' +' , ' ' , content)
-    # content = performSmartCorrections(content)
     return content
 
 def getPdfFileObject(pdf):

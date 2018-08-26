@@ -4,28 +4,14 @@ import ScrapeLord.wikiLeaked as wiki
 import QuestionGenerator.Qgen as qgen
 from DBops.crud import insert,insert_rev
 from json import loads
+import traceback
 import time
 from YetAnotherException import ServerError
+from ResponsePojos.ContentResponse import ContentResponse
+from ResponsePojos.QuestionResponse import QuestionReponse
+from Constants import *
 
 app = Flask(__name__)
-PAGE_NUMBER = 'pageNumber'
-
-pdf_stored = None
-wiki_content = None
-
-CUSTOM_CONTENT = 'content'
-PDF_FILE = 'file'
-SUCCESS = 'Success'
-FAILURE = 'Failure'
-TOPIC = 'topic'
-QUESTIONS = 'questions'
-USER_ID = 'user'
-SCORE = 'score'
-ANSWER_RATING = 'answerRating'
-QUESTION_RATING = 'questionRating'
-
-def resetContents():
-    wiki_content = None
 
 
 # @app.route('/getQuestionsForPdf', methods=['POST'])
@@ -70,21 +56,26 @@ def getContentForTopic():
         content_tree, wiki_content, topic = wiki.getTreeForGivenTopic(topic)
         print ("CON_time :",time.time() - init_time)
 
-        response = {}
-        response[CUSTOM_CONTENT] = content_tree
-        response[TOPIC] = topic
-        response[USER_ID] = uid
-
-        # return jsonify(response)
+        response = ContentResponse()
+        response.setResponseCode(SUCCESS_RESPONSE)
+        response.setContent(content_tree)
+        # return jsonify(response.getResponse())
         return jsonify(content_tree)
+
+    except ServerError as ex:
+        traceback.print_exc()
+        raise ex
+
     except Exception as ex:
-        raise ServerError(str(ex))
+        traceback.print_exc()
+        raise ServerError('New Error: ' + str(ex))
 
 @app.route('/getQuestionsForText', methods=['POST'])
 def getQuestionsForText():
 
     try:
         content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
+        print(request.form[USER_ID])
         uid = loads(manip.removeSlashN(request.form[USER_ID]))
         print('User id:' , uid)
         resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])
@@ -96,15 +87,19 @@ def getQuestionsForText():
 
         print ("QUE_time :", time.time() - init_time)
 
-        response = {}
-        response[QUESTIONS] = questionArray
-        response[USER_ID] = uid
+        response = QuestionReponse()
+        response.setQuestions(questionArray)
 
-        # return jsonify(response)
+        # return jsonify(response.getResponse())
         return jsonify(questionArray)
 
+    except ServerError as ex:
+        traceback.print_exc()
+        raise ex
+
     except Exception as ex:
-        raise ServerError(str(ex))
+        traceback.print_exc()
+        raise ServerError('New Error: ' + str(ex))
 
 
 @app.errorhandler(ServerError)
