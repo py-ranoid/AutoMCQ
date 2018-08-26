@@ -1,4 +1,5 @@
-# BlanQ
+# BlanQ 
+- [**Get the BlanQ android app from the PlayStore**](https://play.google.com/store/apps/details?id=com.shrikanthravi.blanq)
 - View demo [here](https://drive.google.com/open?id=1Zaln9xPbPbJPNeXAJbFaHapuSZ47PQkB). 
   - Quiz on Topic : Chennai -> Architecture
   - Quiz on PDF : Document about History of Android 
