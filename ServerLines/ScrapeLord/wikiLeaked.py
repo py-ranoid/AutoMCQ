@@ -8,21 +8,22 @@ def getRightTitle(error):
     print(values)
     try:
         return values[1]
-    except Exception as ex:
+    except IndexError as ex:
         return None
 
 def getPageContent(topic):
     try:
         content = wikipedia.WikipediaPage(title= topic, )
         return topic, manip.removeSlashN(content.content)
-    except Exception as ex:
-        print('Error: ', str(ex))
+    except wikipedia.exceptions.DisambiguationError as ex:
         nextTitle = getRightTitle(str(ex))
         if nextTitle != None:
             topic, content = getPageContent(nextTitle)
             return topic, content
         else:
-            raise Exception('Topic Not Found')
+            raise ServerError(str(ex))
+    except wikipedia.exceptions.PageError as ex:
+        raise ServerError(str(ex))
 
 
 
@@ -57,9 +58,7 @@ def getTreeForGivenTopic(topic):
         topic, content = getPageContent(topic)
         tree, para = getTreeFromContent(content)
         return tree, para, topic
-    except Exception as ex:
-        print(str(ex))
+    except ServerError as ex:
         raise ex
-
 
 # print (getTreeForGivenTopic('android'))
