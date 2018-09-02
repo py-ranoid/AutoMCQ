@@ -68,7 +68,7 @@ def getTreeFromContent(content , topic):
 
         return androidStyle, paragraph
     except Exception as ex:
-        raise ServerError(str(ex))
+        print(str(ex))
 
 def getTreeForGivenTopic(topic):
     try:

@@ -63,13 +63,13 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="19" />
-          <entry key="py" value="5248" />
+          <entry key="py" value="5261" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="19" />
-          <entry key="Python" value="5248" />
+          <entry key="Python" value="5261" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -111,11 +111,11 @@
         <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="789">
-              <caret line="70" column="33" selection-start-line="70" selection-start-column="33" selection-end-line="70" selection-end-column="33" />
+              <caret line="70" column="21" selection-start-line="70" selection-start-column="21" selection-end-line="70" selection-end-column="21" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
-                <marker date="1535917136301" expanded="true" signature="195:329" ph="..." />
-                <marker date="1535917136301" expanded="true" signature="355:360" ph="..." />
+                <marker date="1535917263717" expanded="true" signature="195:329" ph="..." />
+                <marker date="1535917263717" expanded="true" signature="355:360" ph="..." />
               </folding>
             </state>
           </provider>
@@ -568,11 +568,11 @@
     <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="789">
-          <caret line="70" column="33" selection-start-line="70" selection-start-column="33" selection-end-line="70" selection-end-column="33" />
+          <caret line="70" column="21" selection-start-line="70" selection-start-column="21" selection-end-line="70" selection-end-column="21" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
-            <marker date="1535917136301" expanded="true" signature="195:329" ph="..." />
-            <marker date="1535917136301" expanded="true" signature="355:360" ph="..." />
+            <marker date="1535917263717" expanded="true" signature="195:329" ph="..." />
+            <marker date="1535917263717" expanded="true" signature="355:360" ph="..." />
           </folding>
         </state>
       </provider>
