@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="757b3a5c-5813-4b39-8dae-6bb252567875" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/Constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" beforeDir="false" afterPath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" afterDir="false" />
-    </list>
+    <list default="true" id="757b3a5c-5813-4b39-8dae-6bb252567875" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,8 +108,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="659">
-              <caret line="59" column="17" selection-start-line="59" selection-start-column="17" selection-end-line="59" selection-end-column="17" />
+            <state relative-caret-position="764">
+              <caret line="66" column="34" lean-forward="true" selection-start-line="66" selection-start-column="34" selection-end-line="66" selection-end-column="34" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
                 <marker date="1535914721049" expanded="true" signature="195:329" ph="..." />
@@ -262,36 +259,6 @@
             <path>
               <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
               <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="DBops" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="PDFs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="QuestionGenerator" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="ResponsePojos" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="ScrapeLord" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
-              <item name="ServerLines" type="462c0819:PsiDirectoryNode" />
-              <item name="YesWeKhan" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ServerLines" type="b2602c69:ProjectViewProjectNode" />
@@ -477,9 +444,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1315229" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1315229" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -604,8 +570,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="659">
-          <caret line="59" column="17" selection-start-line="59" selection-start-column="17" selection-end-line="59" selection-end-column="17" />
+        <state relative-caret-position="764">
+          <caret line="66" column="34" lean-forward="true" selection-start-line="66" selection-start-column="34" selection-end-line="66" selection-end-column="34" />
           <folding>
             <element signature="e#0#16#0" expanded="true" />
             <marker date="1535914721049" expanded="true" signature="195:329" ph="..." />
