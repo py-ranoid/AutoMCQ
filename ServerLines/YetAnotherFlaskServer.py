@@ -10,6 +10,7 @@ from YetAnotherException import ServerError
 from ResponsePojos.ContentResponse import ContentResponse
 from ResponsePojos.QuestionResponse import QuestionReponse
 from Constants import *
+from YesWeKhan.contentFetcher import get_transcript_from_URL
 
 app = Flask(__name__)
 
@@ -61,6 +62,38 @@ def getContentForTopic():
         response.setContent(content_tree)
         # return jsonify(response.getResponse())
         return jsonify(content_tree)
+
+    except ServerError as ex:
+        traceback.print_exc()
+        raise ex
+
+    except Exception as ex:
+        traceback.print_exc()
+        raise ServerError('New Error: ' + str(ex))
+
+@app.route('/getQuizfromKA', methods=['POST'])
+def getQuestionsForKAurl():
+    try:
+        url = manip.removeSlashN(request.form['url'])
+        content = get_transcript_from_URL(url)
+        print(request.form[USER_ID])
+
+        uid = loads(manip.removeSlashN(request.form[USER_ID]))
+        print('User id:' , uid)
+        resp = insert(uid, 'KA2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])
+        init_time = time.time()
+        print (resp)
+        print ("INS_time :", time.time() - init_time)
+
+        questionArray = qgen.getQuestions(content)
+
+        print ("QUE_time :", time.time() - init_time)
+
+        response = QuestionReponse()
+        response.setQuestions(questionArray)
+
+        # return jsonify(response.getResponse())
+        return jsonify(questionArray)
 
     except ServerError as ex:
         traceback.print_exc()
