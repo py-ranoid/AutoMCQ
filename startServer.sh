@@ -1,4 +1,4 @@
-base_path=/root
-server_file=$base_path/BlanQ/ServerLines/YetAnotherFlaskServer.py
+base_path=/root/BlanQ
+server_file=/ServerLines/YetAnotherFlaskServer.py
 
 python $server_file &

@@ -69,9 +69,12 @@ def getTreeFromContent(content , topic):
 def getTreeForGivenTopic(topic):
     try:
         topic, content = getPageContent(topic)
+        print(len(content))
         tree, para = getTreeFromContent(content, topic)
         return tree, para, topic
     except ServerError as ex:
         raise ex
+    except Exception as ex:
+        raise ServerError('New Error: ' + str(ex))
 
 # print (getTreeForGivenTopic('android'))
