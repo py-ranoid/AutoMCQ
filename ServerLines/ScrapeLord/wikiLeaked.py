@@ -1,6 +1,8 @@
 import wikipedia
 import QuestionGenerator.PDFManip as manip
 import re
+from Constants import *
+from nltk import sent_tokenize
 from YetAnotherException import ServerError
 
 def getRightTitle(error):
@@ -27,7 +29,7 @@ def getPageContent(topic):
 
 
 
-def getTreeFromContent(content):
+def getTreeFromContent(content , topic):
     content = manip.removeSlashN(content)
     allTopics = content.split(' == ')
 
@@ -46,17 +48,21 @@ def getTreeFromContent(content):
     for key , value in wikiContent.items():
         paragraph += value
         paragraph += '. '
-        androidStyle.append({
-            'topicName': key,
-            'topicContent': value
-        })
+        if len(sent_tokenize(value)) >= MINIMUM_LENGTH_TOPIC:
+            androidStyle.append({
+                'topicName': key,
+                'topicContent': value
+            })
+
+    if len(androidStyle) == 0:
+        androidStyle[topic] = paragraph
 
     return androidStyle, paragraph
 
 def getTreeForGivenTopic(topic):
     try:
         topic, content = getPageContent(topic)
-        tree, para = getTreeFromContent(content)
+        tree, para = getTreeFromContent(content, topic)
         return tree, para, topic
     except ServerError as ex:
         raise ex
