@@ -26,7 +26,8 @@ def getPageContent(topic):
             raise ServerError(str(ex))
     except wikipedia.exceptions.PageError as ex:
         raise ServerError(str(ex))
-
+    except Exception as ex:
+        raise ServerError('New Error: ' + str(ex))
 
 
 def getTreeFromContent(content , topic):
@@ -67,8 +68,8 @@ def getTreeFromContent(content , topic):
             })
 
         return androidStyle, paragraph
+
     except Exception as ex:
-        print('Error here : ' , str(ex))
         raise ServerError(str(ex))
 
 def getTreeForGivenTopic(topic):
