@@ -37,7 +37,11 @@ def addTime():
     score = manip.removeSlashN(request.form[SCORE])
     answerRating = manip.removeSlashN(request.form[ANSWER_RATING])
     questionRating = manip.removeSlashN(request.form[QUESTION_RATING])
-    uid = loads(manip.removeSlashN(request.form[USER_ID]))
+
+    user_info = request.form.get(USER_ID,DEFAULT_USER)
+    print (user_info)
+    uid = loads(manip.removeSlashN(user_info))
+
     resp = insert_rev(uid,answerRating,questionRating,score)
     print (resp)
     return jsonify({"SUCCESS":True})
@@ -49,7 +53,11 @@ def getContentForTopic():
         topic = manip.removeSlashN(request.form[TOPIC])
         print(topic)
         init_time = time.time()
-        uid = loads(manip.removeSlashN(request.form[USER_ID]))
+
+        user_info = request.form.get(USER_ID,DEFAULT_USER)
+        print (user_info)
+        uid = loads(manip.removeSlashN(user_info))
+
         resp = insert(uid, 'TOPI2QUIZ', "LENGTH" + "::" + str(len(topic)) + "::" + topic)
         print(resp)
 
@@ -75,13 +83,16 @@ def getContentForTopic():
 def getQuestionsForKAurl():
     try:
         url = manip.removeSlashN(request.form['url'])
+        init_time = time.time()
         content = get_transcript_from_URL(url)
-        print(request.form[USER_ID])
+        print ("KHA_time :", time.time() - init_time)
 
-        uid = loads(manip.removeSlashN(request.form[USER_ID]))
+        user_info = request.form.get(USER_ID,DEFAULT_USER)
+        print (user_info)
+        uid = loads(manip.removeSlashN(user_info))
+
         print('User id:' , uid)
         resp = insert(uid, 'KA2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])
-        init_time = time.time()
         print (resp)
         print ("INS_time :", time.time() - init_time)
 
@@ -108,8 +119,11 @@ def getQuestionsForText():
 
     try:
         content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
-        print(request.form[USER_ID])
-        uid = loads(manip.removeSlashN(request.form[USER_ID]))
+
+        user_info = request.form.get(USER_ID,DEFAULT_USER)
+        print (user_info)
+        uid = loads(manip.removeSlashN(user_info))
+
         print('User id:' , uid)
         resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])
         init_time = time.time()
