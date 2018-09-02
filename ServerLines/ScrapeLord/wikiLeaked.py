@@ -30,41 +30,45 @@ def getPageContent(topic):
 
 
 def getTreeFromContent(content , topic):
-    content = manip.removeSlashN(content)
-    allTopics = content.split(' == ')
 
-    wikiContent = {}
-    wikiContent['Introduction'] = allTopics[0]
-    i = 1
-    while i < len(allTopics) - 1:
-        if(len(allTopics[i]) >= 3 and len(allTopics[i+1]) >= 10 ):
-            value = manip.removeSlashN(allTopics[i+1]).replace('\"','')
-            if len(value)>200:
-                wikiContent[allTopics[i].replace("=",'').strip()] = re.sub(r'(={1,10})(.+)(={1,10})' , ' ' ,value).strip()
-        i+=2
+    try:
+        content = manip.removeSlashN(content)
+        allTopics = content.split(' == ')
 
-    paragraph = ''
-    androidStyle = []
-    sent_count = 0
-    for key , value in wikiContent.items():
-        paragraph += value
-        paragraph += '. '
-        num_sent = len(sent_tokenize(value))
-        if num_sent >= MINIMUM_LENGTH_SUB_TOPIC:
-            androidStyle.append({
-                'topicName': key,
-                'topicContent': value
-            })
-        sent_count += num_sent
+        wikiContent = {}
+        wikiContent['Introduction'] = allTopics[0]
+        i = 1
+        while i < len(allTopics) - 1:
+            if(len(allTopics[i]) >= 3 and len(allTopics[i+1]) >= 10 ):
+                value = manip.removeSlashN(allTopics[i+1]).replace('\"','')
+                if len(value)>200:
+                    wikiContent[allTopics[i].replace("=",'').strip()] = re.sub(r'(={1,10})(.+)(={1,10})' , ' ' ,value).strip()
+            i+=2
 
-    if sent_count <= MINIMUM_LENGTH_TOPIC:
+        paragraph = ''
         androidStyle = []
-        androidStyle.append({
-            'topicName': topic,
-            'topicContent': paragraph
-        })
+        sent_count = 0
+        for key , value in wikiContent.items():
+            paragraph += value
+            paragraph += '. '
+            num_sent = len(sent_tokenize(value))
+            if num_sent >= MINIMUM_LENGTH_SUB_TOPIC:
+                androidStyle.append({
+                    'topicName': key,
+                    'topicContent': value
+                })
+            sent_count += num_sent
 
-    return androidStyle, paragraph
+        if sent_count <= MINIMUM_LENGTH_TOPIC:
+            androidStyle = []
+            androidStyle.append({
+                'topicName': topic,
+                'topicContent': paragraph
+            })
+
+        return androidStyle, paragraph
+    except Exception as ex:
+        raise ServerError(str(ex))
 
 def getTreeForGivenTopic(topic):
     try:
