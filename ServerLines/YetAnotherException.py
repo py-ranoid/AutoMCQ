@@ -12,5 +12,5 @@ class ServerError(Exception):
     def to_dict(self):
         rv = dict(self.payload or ())
         rv[MESSAGE] = self.message
-        rv[RESPONSE_CODE] = 0
+        rv[RESPONSE_CODE] = FAILURE_RESPONSE
         return rv
