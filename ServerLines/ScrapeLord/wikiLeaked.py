@@ -45,17 +45,24 @@ def getTreeFromContent(content , topic):
 
     paragraph = ''
     androidStyle = []
+    sent_count = 0
     for key , value in wikiContent.items():
         paragraph += value
         paragraph += '. '
-        if len(sent_tokenize(value)) >= MINIMUM_LENGTH_TOPIC:
+        num_sent = len(sent_tokenize(value))
+        if num_sent >= MINIMUM_LENGTH_SUB_TOPIC:
             androidStyle.append({
                 'topicName': key,
                 'topicContent': value
             })
+        sent_count += num_sent
 
-    if len(androidStyle) == 0:
-        androidStyle[topic] = paragraph
+    if sent_count <= MINIMUM_LENGTH_TOPIC:
+        androidStyle = []
+        androidStyle.append({
+            'topicName': topic,
+            'topicContent': paragraph
+        })
 
     return androidStyle, paragraph
 
