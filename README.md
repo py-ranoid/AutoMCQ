@@ -35,4 +35,9 @@ Quiz creation currently requires
   - Score is sent to a Flask Server (PiServer.py) running on Pi
   - If `score > 70`, an hour of TV (viewing time) is added to timeout
   
-Note : Quality of questions generated from PDFs depends on PDF and text parsed from PDF.
+Note : Quality of questions generated from PDFs depends on PDF and text parsed from PDF
+
+### Made by
+- [Vishal Gupta](github.com/py-ranoid) (Question Generation & NLP): vishalg8897@gmail.com
+- [Sundararaman](github.com/vsundar17697) (Server endpoints): vsundar17697@gmail.com
+- [Shrikanth Ravi](github.com/shrikanth7698)(Android app): catcalm7698@gmail.com
