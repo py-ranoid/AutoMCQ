@@ -1,4 +1,5 @@
 from re import findall
+from gensim.models import KeyedVectors
 
 def ngrams(text, n):    
     return set([text[i:i + n] for i in range(len(text) - n)])
@@ -140,3 +141,21 @@ def resolve_prons(sent_num,doc,nlp,sent=None):
             if source is not None:
                 return i,sent_end
     return sent.start,sent.end
+
+def get_w2v_model():
+    MODEL_PATH = '/home/b/Downloads/GoogleNews-vectors-negative300.bin.gz'    
+    if not os.path.exists(MODEL_PATH):
+        raise ValueError("SKIP: You need to download the google news model")
+    model = KeyedVectors.load_word2vec_format(MODEL_PATH, binary=True)
+    return model
+
+w2v_model = get_w2v_model()
+
+def get_w2v_options(source_word,nlp):
+    word_lemma = nlp(unicode(source_word))[0].lemma_
+    sims = w2v_model.similar_by_word(source_word.replace(" ","_"))
+    opts = []
+    for word,_ in sims:
+        if not nlp(unicode(word))[0].lemma_ == word_lemma and source_word.lower() not in word.lower():
+            opts.append(word.replace('_',' '))
+    return opts
