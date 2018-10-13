@@ -146,7 +146,7 @@ def get_w2v_model():
     MODEL_PATH = '/home/b/Downloads/GoogleNews-vectors-negative300.bin.gz'    
     if not os.path.exists(MODEL_PATH):
         raise ValueError("SKIP: You need to download the google news model")
-    model = KeyedVectors.load_word2vec_format(MODEL_PATH, binary=True,limit=3000)
+    model = KeyedVectors.load_word2vec_format(MODEL_PATH, binary=True,limit=300000)
     return model
 
 """

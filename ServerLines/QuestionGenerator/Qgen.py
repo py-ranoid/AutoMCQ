@@ -4,7 +4,7 @@ import random
 from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
-from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons
+from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model
 
 nlp = spacy.load('en_core_web_sm')
 MIN_SENT_LEN = 8
@@ -33,6 +33,7 @@ ENTITY_PRIORITIES = {
     "QUANTITY": 7,
     "ORDINAL": 6,
     "CARDINAL": 2,
+    "VERB":10,
 }
 
 
@@ -183,6 +184,41 @@ def map_ents_to_types_only(ent_list, doc):
     return type2ent
 
 
+def verb_picker(doc):
+    passive_sents2verbs = {}
+    active_sents2verbs = {}
+    for sent in doc.sents:
+        for x in sent:
+            if x.pos_=="VERB" and not x.is_stop and len(x.sent)< MAX_SENT_LEN and not x.head == x:
+                if x.n_lefts:
+                    sent_id = str(x.sent.start)+"#"+str(x.sent.end)
+                    passive_sents2verbs[sent_id] = passive_sents2verbs.get(sent_id,set()).union(set([x.orth_]))
+                elif x.n_rights:
+                    sent_id = str(x.sent.start)+"#"+str(x.sent.end)
+                    active_sents2verbs[sent_id] = active_sents2verbs.get(sent_id,set()).union(set([x.orth_]))
+    print ("PASSIVE :",len(passive_sents2verbs),"ACTIVE :",len(active_sents2verbs))
+    if len(passive_sents2verbs) >= len(active_sents2verbs):
+        return passive_sents2verbs
+    else:
+        return active_sents2verbs
+
+def get_verb_qs(doc):
+    sent_verbs = verb_picker(doc)
+    all_verbs = set([x.lower_ for x in doc if x.pos_=="VERB" and len(x.sent)< MAX_SENT_LEN and not x.is_stop])
+    questions = []
+    for s in sent_verbs:
+        sent = sentID2sent(s,doc)[0]
+        ans=sent_verbs[s].pop().lower()
+        options = sorted(all_verbs,key=lambda x:w2v_model.similarity(ans,x),reverse=True)[:3]
+        sample = {"Question": sent.replace(ans, "_________"),
+            "Answer": ans,
+            "Options": options,
+            "Type": "VERB"}
+        questions.append(sample)
+    return questions
+
+
+
 def choose_ent(ents, counter, ent2type, mul_priority=False, weight=20):
     """
     Choose the best entity/target word from entites.
@@ -307,6 +343,8 @@ def gen_sents(doc,limit=20,largeDoc = None):
             result.append(sample)
     
     # Sort by entity type, choose top 20 and then shuffle.
+    if len(result)<limit/20:
+        result+=get_verb_qs(doc)
     result.sort(key=lambda x:ENTITY_PRIORITIES[x['Type']])
     result = result[:limit]
     random.shuffle(result)
