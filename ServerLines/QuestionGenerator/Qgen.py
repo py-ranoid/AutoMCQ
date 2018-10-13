@@ -4,7 +4,7 @@ import random
 from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
-from re import findall
+from Qgen_utils import ngrams, metric, date_eliminator, resolve_prons
 
 nlp = spacy.load('en_core_web_sm')
 MIN_SENT_LEN = 8
@@ -35,28 +35,20 @@ ENTITY_PRIORITIES = {
     "CARDINAL": 2,
 }
 
-def ngrams(text, n):    
-    return set([text[i:i + n] for i in range(len(text) - n)])
-
 
 def get_doc(content):
     return nlp(content)
 
+def get_entities(doc):
+    """
+    Get all entities in given Spacy document object.
+        :param doc: Spacy Doc object, Used to generate entities
+    """
+    return doc.ents
+
 
 # def word_tokenize(word):
 #     return word.split(' ')
-
-
-def metric(x, y):
-    """
-    Returns Jaccard distance between sets x and y
-        :param x: set 1
-        :param y: set 2
-    """
-    try:
-        return float(len(x.intersection(y))) / len(x.union(y))
-    except ZeroDivisionError:
-        return 0
 
 
 def gen_word2vec(doc):
@@ -79,50 +71,15 @@ def gen_word2vec_from_content(content):
     return model
 
 
-def date_eliminator(answer,options):
+def sentID2sent(sentID, doc):
     """
-    Eliminate date options that include the target
-        :param answer: str, Target date
-        :param options: list, Strings of date options
+    Get sentence from document, given sentence ID.
+    Returns sentence and sentence length.
+        :param sentID: str, Sentence ID
+        :param doc: Spacy document object, Document containing sentences
     """
-    YEAR_REGEX = r'[12][0-9]{3}'
-    month_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    short_months = [x[:3] for x in month_list]
-    MONTH_REGEX = r'('+"|".join(month_list)+"|"+("|".join(month_list)).lower()+"|"+"|".join(short_months)+"|"+("|".join(short_months)).lower()+')'
-    source_year = findall(YEAR_REGEX,answer)
-    source_month = findall(MONTH_REGEX,answer)
-    chosen_opts = []
-    if source_year:
-        if source_month:
-            for opt in options:
-                opt_year = findall(YEAR_REGEX,opt)
-                if opt_year:
-                    if source_year[0] == opt_year[0]:
-                        opt_month = findall(MONTH_REGEX,opt)
-                        if opt_month:
-                            if source_month[0] == opt_month[0]:
-                                continue
-                            else:
-                                chosen_opts.append(opt)
-                        else:
-                            continue
-                    else:
-                        chosen_opts.append(opt)
-                else:
-                    chosen_opts.append(opt)
-        else:
-            for opt in options:
-                opt_year = findall(YEAR_REGEX,opt)
-                if opt_year:
-                    if source_year[0] == opt_year[0]:
-                        continue
-                    else:
-                        chosen_opts.append(opt)
-                else:
-                    chosen_opts.append(opt)
-        return (chosen_opts+[answer])
-    else:
-        return options
+    start, end = [int(x) for x in sentID.split("#")]
+    return doc[start:end].orth_.strip(), end - start
 
 
 def find_best_options(options, w2v_model, answer,ent_type):
@@ -159,14 +116,6 @@ def find_best_options(options, w2v_model, answer,ent_type):
     return options
 
 
-def get_entities(doc):
-    """
-    Get all entities in given Spacy document object.
-        :param doc: Spacy Doc object, Used to generate entities
-    """
-    return doc.ents
-
-
 def map_ents_to_types(ent_list, doc):
     """
     Creates 4 dictionaries. 
@@ -181,11 +130,15 @@ def map_ents_to_types(ent_list, doc):
     type2ent = {}
     counter = {}
     sent2ent = {}
+    all_starts = [s.start for s in doc.sents]
     for e in ent_list:
         init = e.start
+        ent_sent = e.sent
         if doc[init].orth_ == '\n':
             continue
-        sent_id = str(e.sent.start) + "#" + str(e.sent.end)
+        
+        sent_start,sent_end = resolve_prons(all_starts.index(ent_sent.start),doc,nlp)
+        sent_id = str(sent_start) + "#" + str(sent_end)
         etype = doc[init].ent_type_
 
         ent2type[e.orth_] = etype
@@ -200,17 +153,6 @@ def map_ents_to_types(ent_list, doc):
         sent2ent[sent_id] = [e.orth_] + sent2ent.get(sent_id, [])
 
     return ent2type, type2ent, counter, sent2ent
-
-
-def sentID2sent(sentID, doc):
-    """
-    Get sentence from document, given sentence ID.
-    Returns sentence and sentence length.
-        :param sentID: str, Sentence ID
-        :param doc: Spacy document object, Document containing sentences
-    """
-    start, end = [int(x) for x in sentID.split("#")]
-    return doc[start:end].orth_.strip(), end - start
 
 
 def choose_ent(ents, counter, ent2type, mul_priority=False, weight=20):
