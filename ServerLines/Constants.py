@@ -24,3 +24,6 @@ MESSAGE = 'message'
 STATUS_CODE = 'status_code'
 DEFAULT_MESSAGE = 'Default Message'
 DEFAULT_USER = '{"name":"testUSER","mailId":"test@meh.com","uid":"testUSER"}'
+
+MINIMUM_LENGTH_SUB_TOPIC = 8
+MINIMUM_LENGTH_TOPIC = 40
