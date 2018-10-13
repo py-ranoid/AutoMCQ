@@ -6,32 +6,66 @@ from nltk import sent_tokenize
 from YetAnotherException import ServerError
 
 def getRightTitle(error):
-    values = error.split('\n')
-    print(values)
+    """
+    Function to return the first title rather than return error
+    :param error: The error message that contains the error and the list of all the valid titles
+    :return: returns a single title that is valid and which will return wikipedia content
+    """
+    values = getListOfTitles(error)
     try:
-        return values[1]
+        return values[0]
     except IndexError as ex:
         return None
 
-def getPageContent(topic):
+def getListOfTitles(errorStatement):
+    """
+    Function that returns the list of topics that could be used for the user to select.
+    :param errorStatement: Error string as given by wikipedia api
+    :return: List of topics
+    """
+    titles = errorStatement.split('\n')[1:]
+    return titles
+
+def getListOfValidTopics(topic):
+    """
+    For given topic, returns a list of valid topics if there are many options.
+    If there aren't any valid topics, raises NO_TOPIC error.
+    :param topic:
+    :return: List of topics
+    """
     try:
-        content = wikipedia.WikipediaPage(title= topic, )
-        return topic, manip.removeSlashN(content.content)
+        content = wikipedia.WikipediaPage(title=topic, )
+        topics = [topic]
+        return topics
     except wikipedia.exceptions.DisambiguationError as ex:
-        nextTitle = getRightTitle(str(ex))
-        if nextTitle != None:
-            topic, content = getPageContent(nextTitle)
-            return topic, content
-        else:
-            raise ServerError(str(ex))
+        topics = getListOfTitles(str(ex))
+        return topics
     except wikipedia.exceptions.PageError as ex:
-        raise ServerError(str(ex))
+        raise ServerError(NO_TOPICS)
     except Exception as ex:
         raise ServerError('New Error: ' + str(ex))
 
+def getPageContentForFirstTopic(topic):
+    """
+    Given a topic, it returns the content for the wikipedia page by auto using the first valid wiki page
+    :param topic: topic to quiz on
+    :return: content of the wikipedia page
+    """
+    try:
+        topics = getListOfValidTopics(topic)
+        content = wikipedia.WikipediaPage(title = topics[0])
+        return topic , manip.removeSlashN(content.content)
+    except ServerError as ex:
+        raise ex
+
 
 def getTreeFromContent(content , topic):
-
+    """
+    Get the tree containing the parsed data of the wikipedia page. It gets parsed into key value pair.
+    :param content: Content is the wikipedia page content
+    :param topic: topic is the topic for which the quiz is on
+    :return: returns the data as androidStyle which contains a dict tree and also returns the paragraph.
+    """
     try:
         content = manip.removeSlashN(content)
         allTopics = content.split(' == ')
@@ -72,9 +106,14 @@ def getTreeFromContent(content , topic):
     except Exception as ex:
         raise ServerError(str(ex))
 
-def getTreeForGivenTopic(topic):
+def getTreeForFirstGivenTopic(topic):
+    """
+    function to get the information for a given topic.
+    :param topic: the topic to quiz on
+    :return: returns the tree for given topic, the paragraph and the updated topic name
+    """
     try:
-        topic, content = getPageContent(topic)
+        topic, content = getPageContentForFirstTopic(topic)
         print(len(content))
         tree, para = getTreeFromContent(content, topic)
         return tree, para, topic
