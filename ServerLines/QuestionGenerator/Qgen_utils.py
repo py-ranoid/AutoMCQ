@@ -60,3 +60,60 @@ def date_eliminator(answer,options):
         return (chosen_opts+[answer])
     else:
         return options
+
+def join_sents(doc):
+    sents = list(doc.sents)
+    fin_sent = sents[0].text
+    for s in sents[1:-1]:
+        fin_sent = fin_sent[:-1] + ', ' +sents[1].text[0].lower() + sents[1].text[1:]
+    fin_sent = fin_sent[:-1] + ' and ' +sents[-1].text[0].lower() +  sents[-1].text[1:]
+    return fin_sent
+
+def get_source(doc,ind,verbose=False):
+    if verbose:
+        print "DOC",doc," :: ID",ind
+    pro = doc[ind]
+    root = pro.head
+    temp = root
+    while True:
+        prev = temp
+        if verbose:
+            print 'temp:',temp
+        if temp.left_edge == pro or temp.left_edge == temp and not temp.head.left_edge == temp:
+            temp = temp.head
+        else:
+            temp_temp = None
+            if verbose:
+                print (list(temp.lefts))
+            for i in list(temp.lefts)[::-1]:
+                if i.pos_ == "PROPN":
+                    temp_temp = i
+            temp = temp_temp if temp_temp is not None else temp.left_edge
+        if temp.pos_ == "PROPN":
+            break
+        if temp == prev:
+            temp=None
+            break
+    return temp
+
+def hanging_pron(sent):
+    init_id = 0
+    for w in sent:
+        init_id = w.i if init_id == 0 else init_id
+        if w.pos_ == 'PRON' and (w == w.head.head.head.left_edge or w in list(w.head.head.head.lefts)):
+            return w.i-init_id
+    return None
+
+def resolve_prons(sent_num,doc,nlp,sent=None):
+    if sent is None:
+        sent = list(doc.sents)[sent_num]
+    pron_id = hanging_pron(sent)
+    print ("Pron ID:",pron_id)
+    if pron_id is not None:
+        all_sent_starts = [x.start for x in doc.sents]
+        sent_end = sent.end
+        for i in all_sent_starts[:sent_num][::-1]:
+            new_sent = nlp(doc[i:sent_end].orth_)
+            source = get_source(nlp(join_sents(new_sent)),sent.start+pron_id-i,verbose=False)
+            if source is not None:
+                print (sent,'-->',source)
