@@ -1,12 +1,14 @@
 from dateutil.parser import parse
 from random import sample , randint
 import re
-# from Constants import *
-
-MONTH_LIST = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
-              "November", "December"]
+from Constants import *
 
 TIME_ENTITIES = ["Year", "Month", "Day", "Week", "Decade", "Millenium"]
+
+def removeTrailingSpace(content):
+    content = content[:-1] if content[-1] == ' ' else content
+    return content
+
 
 def datesDistract(date):
 
@@ -23,27 +25,24 @@ def datesDistract(date):
         yearFlag = True if len(yearValue) > 0 else False
 
         if(yearFlag):
-            print(yearValue)
+            # print(yearValue)
             date = re.sub(YEAR_REGEX , '' , date)
-            print(date)
+            # print(date)
 
         monthValue = re.findall(MONTH_REGEX , date)
         dateValue = re.findall(DATE_REGEX , date)
 
-        print(yearValue , monthValue , dateValue)
+        # print(yearValue , monthValue , dateValue)
         monthFlag = True if len(monthValue) > 0 else False
         dateFlag = True if len(dateValue) > 0 else False
 
-        print(dateValue)
+        # print(dateValue)
 
         finalString = ''
         option1 = ''
         option2 = ''
         if(dateFlag):
             finalString += dateValue[0] + ' '
-
-            actual = dateValue[0]
-            random1 , random2 = actual , actual
 
             random1, random2 = sample(range(1 , 29) , 2)
 
@@ -66,6 +65,7 @@ def datesDistract(date):
             finalString += yearValue[0] + ' '
             lowerMonth = 1
             upperMonth = 4
+
             if(monthFlag):
                 actual = yearValue[0]
                 random1 = randint(0 , 1)
@@ -85,13 +85,12 @@ def datesDistract(date):
 
                 option2 += str(int(actual) + op) + ' '
 
-        print([finalString, option1, option2])
-        return [finalString , option1 , option2]
+        # print([finalString, option1, option2])
+        return [removeTrailingSpace(finalString) , removeTrailingSpace(option1) , removeTrailingSpace(option2)]
 
     except ValueError as ex:
         date = date.lower()
         S_YEAR_REGEX = r'([12][0-9]{3})s'
-        FILLER_REGEX = r'the|in|in the'
 
         yearValue = re.findall(S_YEAR_REGEX , date)
         yearFlag = True if len(yearValue) > 0 else False
@@ -111,8 +110,8 @@ def datesDistract(date):
             op = -1 if randint(0 , 4) < 2 else 1
             option2 = date[:index] + ' ' + str(actual + op*random2*10) + 's' + ' ' + date[index:]
 
-        print([finalString , option1 , option2])
-        return [finalString , option1 , option2]
+        # print([finalString , option1 , option2])
+        return [removeTrailingSpace(finalString) , removeTrailingSpace(option1) , removeTrailingSpace(option2)]
 
     except Exception as ex:
         raise ex

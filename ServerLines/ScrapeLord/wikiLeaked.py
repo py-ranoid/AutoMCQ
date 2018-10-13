@@ -35,12 +35,11 @@ def getListOfValidTopics(topic):
     :return: List of topics
     """
     try:
-        content = wikipedia.WikipediaPage(title=topic, )
-        topics = [topic]
-        return topics
+        content = wikipedia.search(topic)
+        # topics = [topic]
+        return content
     except wikipedia.exceptions.DisambiguationError as ex:
-        topics = getListOfTitles(str(ex))
-        return topics
+        return ex.options
     except wikipedia.exceptions.PageError as ex:
         raise ServerError(NO_TOPICS)
     except Exception as ex:

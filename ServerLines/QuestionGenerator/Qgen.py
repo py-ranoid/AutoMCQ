@@ -7,7 +7,7 @@ from gensim.models import Word2Vec
 from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons
 from Constants import *
 from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model
-
+from QuestionGenerator.Distract import datesDistract
 nlp = spacy.load('en_core_web_sm')
 
 TEST_TEXT = """
@@ -100,7 +100,10 @@ def find_best_options(options, w2v_model, answer,ent_type , sentence):
 
     distances = {}
     if ent_type == "DATE":
-        options = date_eliminator(answer,options)
+        try:
+            return datesDistract(answer)
+        except:
+            options = date_eliminator(answer,options)
         # TODO If reduced options are too few, add synthetic date discriminators
     for opt in options:
         # Eliminate options that have too many common ngrams
@@ -348,10 +351,10 @@ def gen_sents(doc,limit=20,largeDoc = None):
                 # TODO generate more options
                 continue
             random.shuffle(options)
-            sample = {"Question": sentence.replace(ent2, "_________"),
-                      "Answer": ent2,
-                      "Options": options,
-                      "Type": ent2type[ent2]}
+            sample = {QUESTION: sentence.replace(ent2, "_________"),
+                      ANSWER: ent2,
+                      OPTIONS: options,
+                      ANSWER_TYPE: ent2type[ent2]}
             result.append(sample)
     
     # Sort by entity type, choose top 20 and then shuffle.
@@ -373,9 +376,21 @@ def getWikiQuestions(allContent , quizContent):
 
     quizDoc = get_doc(quizContent)
     allDoc = get_doc(allContent)
-    questionsArray = gen_sents(quizDoc, largeDoc=allDoc)
+    questionsArray = capitalizeEverything(gen_sents(quizDoc, largeDoc=allDoc))
     return questionsArray
 
+
+def capitalizeEverything(questionArray):
+    questions = []
+    for questionInfo in questionArray:
+        questions.append({
+            QUESTION: questionInfo[QUESTION],
+            ANSWER: questionInfo[ANSWER].upper(),
+            OPTIONS: [option.upper() for option in questionInfo[OPTIONS]],
+            ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
+        })
+
+    return questions
 
 def getQuestions(content):
     """
@@ -383,5 +398,6 @@ def getQuestions(content):
         :param content: str, Text to generate questions from
     """    
     doc = get_doc(content)
-    questionArray = gen_sents(doc)
+    questionArray = capitalizeEverything(gen_sents(doc))
+
     return questionArray
