@@ -138,4 +138,5 @@ def resolve_prons(sent_num,doc,nlp,sent=None):
             new_sent = nlp(doc[i:sent_end].orth_)
             source = get_source(nlp(join_sents(new_sent)),sent.start+pron_id-i,verbose=False)
             if source is not None:
-                print (sent,'-->',source)
+                return i,sent_end
+    return sent.start,sent.end
