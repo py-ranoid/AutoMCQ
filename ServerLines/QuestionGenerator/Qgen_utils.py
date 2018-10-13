@@ -1,5 +1,6 @@
 from re import findall
 from gensim.models import KeyedVectors
+import os
 
 def ngrams(text, n):    
     return set([text[i:i + n] for i in range(len(text) - n)])
