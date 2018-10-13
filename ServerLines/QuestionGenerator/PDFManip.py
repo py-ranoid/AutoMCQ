@@ -20,6 +20,21 @@ def removeSlashN(content):
     content = re.sub(r' +' , ' ' , content)
     return content
 
+def removeSlashQuotes(content):
+    if sys.version_info[0]  < 3:
+        content = unicode(content)
+    else:
+        content = str(content)
+    content = content.replace('\"', ' ')
+    content = re.sub(r' +', ' ', content)
+    content = removeInitialSpace(content)
+    return content
+
+def removeInitialSpace(content):
+    if content[0] == ' ':
+        content = content[1:]
+    return content
+
 def getPdfFileObject(pdf):
     pdfReader = None
     if(pdf == None):

@@ -12,7 +12,7 @@ from ResponsePojos.QuestionResponse import QuestionReponse
 from ResponsePojos.TopicsResponse import TopicsResponse
 from Constants import *
 from YesWeKhan.contentFetcher import get_transcript_from_URL
-
+from ast import literal_eval
 app = Flask(__name__)
 
 @app.route('/addTime', methods=['POST'])
@@ -55,8 +55,7 @@ def getContentForTopic():
         response = ContentResponse()
         response.setResponseCode(SUCCESS_RESPONSE)
         response.setContent(content_tree)
-        # return jsonify(response.getResponse())
-        return jsonify(content_tree)
+        return jsonify(response.getResponse())
 
     except ServerError as ex:
         traceback.print_exc()
@@ -94,8 +93,50 @@ def getQuestionsForKAurl():
         response = QuestionReponse()
         response.setQuestions(questionArray)
 
-        # return jsonify(response.getResponse())
-        return jsonify(questionArray)
+        return jsonify(response.getResponse())
+
+    except ServerError as ex:
+        traceback.print_exc()
+        raise ex
+
+    except Exception as ex:
+        traceback.print_exc()
+        raise ServerError('New Error: ' + str(ex))
+
+@app.route('/getQuestionsForWikiTopic', methods=['POST'])
+def getQuestionsForWikiTopic():
+    """
+    Generates questions for the given wiki tree content and the sub topic to quiz on.
+
+    QUIZ_TOPIC
+    CUSTOM_CONTENT
+    USER_ID
+    :return: Questions Response Object
+    """
+    try:
+        quiztopic = manip.removeSlashN(request.form[QUIZ_TOPIC])
+        topicContent = literal_eval(request.form[CUSTOM_CONTENT])
+
+        user_info = request.form.get(USER_ID, DEFAULT_USER)
+        print (user_info)
+        uid = loads(manip.removeSlashN(user_info))
+
+        allContent, quizContent = wiki.getQuizData(topicContent , quiztopic)
+
+        print('User id:', uid)
+        resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(allContent)) + "::" + allContent[:20])
+        init_time = time.time()
+        print (resp)
+        print ("INS_time :", time.time() - init_time)
+
+        questionArray = qgen.getWikiQuestions(allContent , quizContent)
+
+        print ("QUE_time :", time.time() - init_time)
+
+        response = QuestionReponse()
+        response.setQuestions(questionArray)
+
+        return jsonify(response.getResponse())
 
     except ServerError as ex:
         traceback.print_exc()
@@ -111,7 +152,6 @@ def getQuestionsForText():
     Get the questions for any given text in accordance to QuestionResponse().
     :return:
     """
-
     try:
         content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
 
@@ -132,8 +172,7 @@ def getQuestionsForText():
         response = QuestionReponse()
         response.setQuestions(questionArray)
 
-        # return jsonify(response.getResponse())
-        return jsonify(questionArray)
+        return jsonify(response.getResponse())
 
     except ServerError as ex:
         traceback.print_exc()
@@ -182,8 +221,8 @@ def handleInvalidUsage(error):
 
 
 if __name__ == '__main__':
+    print('Starting Server')
     app.run(debug=True,
             use_reloader=False,
-            host='127.0.0.1',
-            port=5000
+            host='0.0.0.0',
             ) #run app in debug mode on port 5000

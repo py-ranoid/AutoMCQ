@@ -8,12 +8,15 @@ PDF_FILE = 'file'
 SUCCESS = 'Success'
 FAILURE = 'Failure'
 TOPIC = 'topic'
+QUIZ_TOPIC = 'subtopic'
 USER_ID = 'user'
 SCORE = 'score'
 ANSWER_RATING = 'answerRating'
 QUESTION_RATING = 'questionRating'
 SUCCESS_RESPONSE = 1
 FAILURE_RESPONSE = 0
+TOPIC_NAME = 'topicName'
+TOPIC_CONTENT = 'topicContent'
 
 NO_QUESTIONS = 'No Questions Were Generated'
 

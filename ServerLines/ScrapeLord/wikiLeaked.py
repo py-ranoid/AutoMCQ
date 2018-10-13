@@ -24,7 +24,8 @@ def getListOfTitles(errorStatement):
     :return: List of topics
     """
     titles = errorStatement.split('\n')[1:]
-    return titles
+    actualTitles = [manip.removeSlashQuotes(title) for title in titles]
+    return actualTitles
 
 def getListOfValidTopics(topic):
     """
@@ -58,6 +59,18 @@ def getPageContentForFirstTopic(topic):
     except ServerError as ex:
         raise ex
 
+def getQuizData(tree , subtopic):
+    paragraph = ''
+    quizContent = ''
+    for container in tree:
+        paragraph += container[TOPIC_CONTENT]
+        paragraph += '. '
+        if(container[TOPIC_NAME] == subtopic):
+            quizContent = container[TOPIC_CONTENT]
+
+    paragraph.replace('..' , '.')
+
+    return paragraph , quizContent
 
 def getTreeFromContent(content , topic):
     """
@@ -89,16 +102,16 @@ def getTreeFromContent(content , topic):
             num_sent = len(sent_tokenize(value))
             if num_sent >= MINIMUM_LENGTH_SUB_TOPIC:
                 androidStyle.append({
-                    'topicName': key,
-                    'topicContent': value
+                    TOPIC_NAME: key,
+                    TOPIC_CONTENT: value
                 })
             sent_count += num_sent
 
         if sent_count <= MINIMUM_LENGTH_TOPIC:
             androidStyle = []
             androidStyle.append({
-                'topicName': topic,
-                'topicContent': paragraph
+                TOPIC_NAME: topic,
+                TOPIC_CONTENT: paragraph
             })
 
         return androidStyle, paragraph

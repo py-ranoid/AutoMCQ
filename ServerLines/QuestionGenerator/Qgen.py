@@ -266,15 +266,17 @@ def print_results(sents):
     print(len(sents))
 
 
-def gen_sents(doc,limit=20):
+def gen_sents(doc,limit=20,largeDoc = None):
     """
     Get list of sentences and options from given spacy doc object.
         :param doc: Spacy Doc object, Used to create questions
         :param limit=20: Upper Limit on number of questions to be returned
     """
     ents = get_entities(doc)
-    # TODO Train word2vec on larger document
-    w2v_model = gen_word2vec(doc)
+    if largeDoc is None:
+        w2v_model = gen_word2vec(doc)
+    else:
+        w2v_model = gen_word2vec_from_content(largeDoc)
     ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
     result = []
     for sentID in sent2ent:
@@ -338,6 +340,18 @@ def gen_sents(doc,limit=20):
     random.shuffle(result)
     
     return result
+
+def getWikiQuestions(allContent , quizContent):
+    """
+
+    :param allContent: Complete paragraph about the entire wikipedia article
+    :param quizContent: Content of the subtopic to generate quiz on
+    :return: All Questions
+    """
+
+    quizDoc = get_doc(quizContent)
+    questionsArray = gen_sents(quizDoc , largeDoc=allContent)
+    return questionsArray
 
 
 def getQuestions(content):
