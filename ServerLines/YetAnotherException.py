@@ -1,6 +1,9 @@
 from Constants import *
 
 class ServerError(Exception):
+    """
+    A custom ServerError class that helps contain the exception that happens in server.
+    """
     status_code = 200
 
     def __init__(self, message, response_code=0, payload=None):

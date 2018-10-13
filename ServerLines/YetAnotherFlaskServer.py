@@ -9,28 +9,11 @@ import time
 from YetAnotherException import ServerError
 from ResponsePojos.ContentResponse import ContentResponse
 from ResponsePojos.QuestionResponse import QuestionReponse
+from ResponsePojos.TopicsResponse import TopicsResponse
 from Constants import *
 from YesWeKhan.contentFetcher import get_transcript_from_URL
 
 app = Flask(__name__)
-
-
-# @app.route('/getQuestionsForPdf', methods=['POST'])
-# def getQuestionsForPdf():
-#     pageNumber = int(request.form[PAGE_NUMBER].replace('\r\n',' ').replace('\n','')) - 1
-#     print (pageNumber)
-#     textContent = manip.getPageContent(pageNumber , None)
-#     # print (textContent)
-#     questionsArray = qgen.getQuestions(textContent)
-#     resp = {}
-#     print (questionsArray)
-#     return jsonify(questionsArray)
-
-# @app.route('/getContentForPdf', methods=['POST'])
-# def getContentForPdf():
-#     print ('Storing file')
-#     request.files[PDF_FILE].save(manip.DEFAULT_FILE)
-#     return jsonify({"status":"success"})
 
 @app.route('/addTime', methods=['POST'])
 def addTime():
@@ -49,6 +32,10 @@ def addTime():
 
 @app.route('/getContentForTopic', methods=['POST'])
 def getContentForTopic():
+    """
+    Given a topic name, the content for that topic is returned to be displayed to the user from wikipedia.
+    :returns Returns a POJO in correspondence to ContentResponse()
+    """
     try:
         topic = manip.removeSlashN(request.form[TOPIC])
         print(topic)
@@ -62,7 +49,7 @@ def getContentForTopic():
         print(resp)
 
         print ("INS_time :", time.time() - init_time)
-        content_tree, wiki_content, topic = wiki.getTreeForGivenTopic(topic)
+        content_tree, wiki_content, topic = wiki.getTreeForFirstGivenTopic(topic)
         print ("CON_time :",time.time() - init_time)
 
         response = ContentResponse()
@@ -81,6 +68,10 @@ def getContentForTopic():
 
 @app.route('/getQuizfromKA', methods=['POST'])
 def getQuestionsForKAurl():
+    """
+    Khan Academy Questions Generator.
+    :return:
+    """
     try:
         url = manip.removeSlashN(request.form['url'])
         init_time = time.time()
@@ -116,6 +107,10 @@ def getQuestionsForKAurl():
 
 @app.route('/getQuestionsForText', methods=['POST'])
 def getQuestionsForText():
+    """
+    Get the questions for any given text in accordance to QuestionResponse().
+    :return:
+    """
 
     try:
         content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
@@ -149,8 +144,38 @@ def getQuestionsForText():
         raise ServerError('New Error: ' + str(ex))
 
 
+@app.route('/getListOfTopics', methods=['POST'])
+def getListOfTopics():
+    """
+    Gets the list of topics taking the topic as input from the incoming request.
+    :return: Returns a list of topics if there are 1 or more, else returns ServerError.
+    """
+    try:
+        topic = manip.removeSlashN(request.form[TOPIC])
+        topics = wiki.getListOfValidTopics(topic)
+
+        response = TopicsResponse()
+        response.setMultipleTopics(topics)
+
+        return jsonify(response.getResponse())
+
+    except ServerError as ex:
+        #TODO Handle exception
+        traceback.print_exc()
+        raise ex
+
+    except Exception as ex:
+        traceback.print_exc()
+        raise ServerError('New Error: ' + str(ex))
+
+
 @app.errorhandler(ServerError)
-def handle_invalid_usage(error):
+def handleInvalidUsage(error):
+    """
+    Exception handler to handle invalid usages
+    :param error:
+    :return:
+    """
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
@@ -159,5 +184,6 @@ def handle_invalid_usage(error):
 if __name__ == '__main__':
     app.run(debug=True,
             use_reloader=False,
-            host='0.0.0.0'
+            host='127.0.0.1',
+            port=5000
             ) #run app in debug mode on port 5000

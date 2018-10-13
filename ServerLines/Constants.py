@@ -27,3 +27,7 @@ DEFAULT_USER = '{"name":"testUSER","mailId":"test@meh.com","uid":"testUSER"}'
 
 MINIMUM_LENGTH_SUB_TOPIC = 8
 MINIMUM_LENGTH_TOPIC = 40
+
+MULTIPLE_TOPICS = 'numTopics'
+TOPIC_LIST = 'topicList'
+NO_TOPICS = 'No Topics Were Found Relavant to Search Query'
