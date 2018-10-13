@@ -155,6 +155,30 @@ def map_ents_to_types(ent_list, doc):
     return ent2type, type2ent, counter, sent2ent
 
 
+def map_ents_to_types_only(ent_list, doc):
+    """
+    Creates 4 dictionaries. 
+    - ent2type : Maps entity text to entity type
+    - type2ent : Maps entity type to list of all entities of that type
+    - counter  : Maps entity text to its count
+    - sent2ent : Maps sent_id ("start_index#end_index") to list of all entities in it.
+        :param ent_list: Spacy entities generator object, Contains all entities in given document
+        :param doc: Spacy Doc object
+    """
+    type2ent = {}
+    for e in ent_list:
+        init = e.start
+        if doc[init].orth_ == '\n':
+            continue        
+        etype = doc[init].ent_type_
+
+        temp = type2ent.get(etype, None)
+        type2ent_new = set([e.orth_]) if temp is None else temp.union(set([e.orth_]))
+        type2ent[etype] = type2ent_new
+
+    return type2ent
+
+
 def choose_ent(ents, counter, ent2type, mul_priority=False, weight=20):
     """
     Choose the best entity/target word from entites.
@@ -221,7 +245,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
     else:
         w2v_model = gen_word2vec(largeDoc)
     ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
-    large_ent2type, large_type2ent, large_counter, large_sent2ent = map_ents_to_types(large_ents, largeDoc)
+    large_type2ent= map_ents_to_types_only(large_ents, largeDoc)
     result = []
     for sentID in sent2ent:
         # Iterating over all sentences that contain entities
