@@ -35,16 +35,24 @@ ENTITY_PRIORITIES = {
     "CARDINAL": 2,
 }
 
-def ngrams(text, n):
+def ngrams(text, n):    
     return set([text[i:i + n] for i in range(len(text) - n)])
+
 
 def get_doc(content):
     return nlp(content)
 
+
 # def word_tokenize(word):
 #     return word.split(' ')
 
+
 def metric(x, y):
+    """
+    Returns Jaccard distance between sets x and y
+        :param x: set 1
+        :param y: set 2
+    """
     try:
         return float(len(x.intersection(y))) / len(x.union(y))
     except ZeroDivisionError:
@@ -52,17 +60,31 @@ def metric(x, y):
 
 
 def gen_word2vec(doc):
+    """
+    Trains word2vec model from Spacy document object
+        :param doc: Spacy Document object
+    """
     sents = [[y.orth_.lower() for y in x] for x in doc.sents]
     model = Word2Vec(sents, size=100, window=5, min_count=1, workers=4)
     return model
 
+
 def gen_word2vec_from_content(content):
+    """
+    Trains word2vec model from string (paragraph)
+        :param content: str, Text to train model on
+    """
     sents = [word_tokenize(s) for s in sent_tokenize(content.lower())]
-    # sents = [[y.orth_.lower() for y in x] for x in doc.sents]
     model = Word2Vec(sents, size=100, window=5, min_count=1, workers=4)
     return model
 
+
 def date_eliminator(answer,options):
+    """
+    Eliminate date options that include the target
+        :param answer: str, Target date
+        :param options: list, Strings of date options
+    """
     YEAR_REGEX = r'[12][0-9]{3}'
     month_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     short_months = [x[:3] for x in month_list]
@@ -102,33 +124,59 @@ def date_eliminator(answer,options):
     else:
         return options
 
+
 def find_best_options(options, w2v_model, answer,ent_type):
+    """
+    Choose the best 3 (2+target) options from the given options.
+        :param options: list, All options
+        :param w2v_model: gensim Word2Vec model used to compare options with target
+        :param answer: str, Target word
+        :param ent_type: str, Entity type
+    """
+    # Convert answer to lowercase and create trigrams
     ans_low = answer.lower()
     source = word_tokenize(ans_low)
     source_grams = ngrams(ans_low, 3)
+
     distances = {}
     if ent_type == "DATE":
         options = date_eliminator(answer,options)
+        # TODO If reduced options are too few, add synthetic date discriminators
     for opt in options:
+        # Eliminate options that have too many common ngrams
         opt_low = opt.lower()
         if opt == answer:
             continue
         opt_grams = ngrams(opt_low, 3)
         if metric(source_grams, opt_grams) > 0.18:
+            # Assign very high distance if metric is high
             distances[opt] = 40
-            continue
-        distance = w2v_model.wmdistance(word_tokenize(opt_low), source)
-        # print (opt,distance,metric(source_grams,opt_grams))
-        distances[opt] = distance
+        else:
+            distances[opt] = w2v_model.wmdistance(word_tokenize(opt_low), source)
+    # Assign distance to answer to 0 (closest to target)
     distances[answer] = 0
-    # print (distances)
     options.sort(key=lambda x: distances[x])
     return options
 
+
 def get_entities(doc):
+    """
+    Get all entities in given Spacy document object.
+        :param doc: Spacy Doc object, Used to generate entities
+    """
     return doc.ents
 
+
 def map_ents_to_types(ent_list, doc):
+    """
+    Creates 4 dictionaries. 
+    - ent2type : Maps entity text to entity type
+    - type2ent : Maps entity type to list of all entities of that type
+    - counter  : Maps entity text to its count
+    - sent2ent : Maps sent_id ("start_index#end_index") to list of all entities in it.
+        :param ent_list: Spacy entities generator object, Contains all entities in given document
+        :param doc: Spacy Doc object
+    """
     ent2type = {}
     type2ent = {}
     counter = {}
@@ -155,35 +203,60 @@ def map_ents_to_types(ent_list, doc):
 
 
 def sentID2sent(sentID, doc):
+    """
+    Get sentence from document, given sentence ID.
+    Returns sentence and sentence length.
+        :param sentID: str, Sentence ID
+        :param doc: Spacy document object, Document containing sentences
+    """
     start, end = [int(x) for x in sentID.split("#")]
     return doc[start:end].orth_.strip(), end - start
 
 
 def choose_ent(ents, counter, ent2type, mul_priority=False, weight=20):
+    """
+    Choose the best entity/target word from entites.
+    - count_map : Maps counts to entities
+        :param ents: list, All entities in sentence.
+        :param counter: dict, Count of all entities in document
+        :param ent2type: dict, Maps entity to entity type
+        :param mul_priority=False: bool, to mutiple 
+        :param weight=20: int, weightage given to
+    """
     count_map = {}
     if mul_priority:
+        # Assigns priority by mutiplying count and weightage
+        # In case of multiple entities having the same value, picks the first entity
         for e in ents:
             pri = ENTITY_PRIORITIES[ent2type[e]]
             count_map[(weight / counter[e]) * pri] = [e] + count_map.get(e, [])
         return count_map[max(count_map.keys())][0]
     else:
+        # Assigns priority based on count
+        # In case of multiple entities having the same value, picks the entity with greates priority
         for e in ents:
             count_map[counter[e]] = [e] + count_map.get(e, [])
         temp = min(count_map.keys())
         if len(count_map[temp]) > 1:
-            fin = None
-            max_pri = 0
-            for x in count_map[temp]:
-                pri = ENTITY_PRIORITIES[ent2type[x]]
-                if max_pri > pri:
-                    fin = x
-                    max_pri = pri
+            # Choose entity with greatest priority value 
+            fin = max(count_map[temp],key=lambda x:ENTITY_PRIORITIES[ent2type[x]])
+            # fin = None
+            # max_pri = 0
+            # for x in count_map[temp]:
+            #     pri = ENTITY_PRIORITIES[ent2type[x]]
+            #     if max_pri > pri:
+            #         fin = x
+            #         max_pri = pri
             return fin
         else:
             return count_map[temp][0]
 
 
 def print_results(sents):
+    """
+    Display QA
+        :param sents: list, Contains dictionary of samples, one for each question
+    """
     for s in sents:
         print("Question", '\n', s["Question"])
         print("Answer", '\n', s["Answer"])
@@ -194,23 +267,33 @@ def print_results(sents):
 
 
 def gen_sents(doc,limit=20):
+    """
+    Get list of sentences and options from given spacy doc object.
+        :param doc: Spacy Doc object, Used to create questions
+        :param limit=20: Upper Limit on number of questions to be returned
+    """
     ents = get_entities(doc)
+    # TODO Train word2vec on larger document
     w2v_model = gen_word2vec(doc)
     ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
     result = []
     for sentID in sent2ent:
+        # Iterating over all sentences that contain entities
         ent1 = choose_ent(sent2ent[sentID], counter, ent2type)
         ent2 = choose_ent(sent2ent[sentID], counter, ent2type, True)
         sentence, sent_len = sentID2sent(sentID, doc)
+        # Discarding sentences that are too long or too short
         if sent_len < MIN_SENT_LEN or sent_len > MAX_SENT_LEN:
             continue
         if ent1 == ent2:
-            options = [i for i in type2ent[ent2type[ent1]]
-                       if i not in sent2ent[sentID]] + [ent1]
+            # Options : All entities of the same type as target but not present in question
+            # Also add target to options
+            options = [i for i in type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
 
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
             elif len(options) < 3:
+                # TODO generate more options
                 continue
             random.shuffle(options)
             sample = {"Question": sentence.replace(ent1, "_________"),
@@ -221,11 +304,12 @@ def gen_sents(doc,limit=20):
 
         else:
             # For Entity 1
-            options = [i for i in type2ent[ent2type[ent1]]
-                       if i not in sent2ent[sentID]] + [ent1]
+            options = [i for i in type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
             elif len(options) < 3:
+                # TODO generate more options
+                # TODO If entity type is date, add synthetic date discriminators
                 continue
             random.shuffle(options)
             sample = {"Question": sentence.replace(ent1, "_________"),
@@ -235,11 +319,11 @@ def gen_sents(doc,limit=20):
             result.append(sample)
 
             # For Entity 2
-            options = [i for i in type2ent[ent2type[ent2]]
-                       if i not in sent2ent[sentID]] + [ent2]
+            options = [i for i in type2ent[ent2type[ent2]] if i not in sent2ent[sentID]] + [ent2]
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2])[:3]
             elif len(options) < 3:
+                # TODO generate more options
                 continue
             random.shuffle(options)
             sample = {"Question": sentence.replace(ent2, "_________"),
@@ -247,12 +331,20 @@ def gen_sents(doc,limit=20):
                       "Options": options,
                       "Type": ent2type[ent2]}
             result.append(sample)
+    
+    # Sort by entity type, choose top 20 and then shuffle.
     result.sort(key=lambda x:ENTITY_PRIORITIES[x['Type']])
     result = result[:limit]
     random.shuffle(result)
+    
     return result
 
+
 def getQuestions(content):
+    """
+    Get questions from given text content.
+        :param content: str, Text to generate questions from
+    """    
     doc = get_doc(content)
     questionArray = gen_sents(doc)
     return questionArray
