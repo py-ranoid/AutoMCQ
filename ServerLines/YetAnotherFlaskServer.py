@@ -102,6 +102,12 @@ def getQuestionsForKAurl():
     except Exception as ex:
         traceback.print_exc()
         raise ServerError('New Error: ' + str(ex))
+#
+# def insertLog(user_info , allContent):
+#     print (user_info)
+#     uid = loads(manip.removeSlashN(user_info))
+#     print('User id:', uid)
+#     resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(allContent)) + "::" + allContent[:20])
 
 @app.route('/getQuestionsForWikiTopic', methods=['POST'])
 def getQuestionsForWikiTopic():
@@ -115,8 +121,8 @@ def getQuestionsForWikiTopic():
     """
     try:
         quiztopic = manip.removeSlashN(request.form[QUIZ_TOPIC])
+        print('GG Errorr: ',request.form)
         topicContent = literal_eval(request.form[CUSTOM_CONTENT])
-
         user_info = request.form.get(USER_ID, DEFAULT_USER)
         print (user_info)
         uid = loads(manip.removeSlashN(user_info))
@@ -154,7 +160,7 @@ def getQuestionsForText():
     """
     try:
         content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
-
+        print(content)
         user_info = request.form.get(USER_ID,DEFAULT_USER)
         print (user_info)
         uid = loads(manip.removeSlashN(user_info))

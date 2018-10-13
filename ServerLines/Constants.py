@@ -34,3 +34,11 @@ MINIMUM_LENGTH_TOPIC = 40
 MULTIPLE_TOPICS = 'numTopics'
 TOPIC_LIST = 'topicList'
 NO_TOPICS = 'No Topics Were Found Relavant to Search Query'
+
+MONTH_LIST = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+              "November", "December"]
+SHORT_MONTH_LIST = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+              "Nov", "Dec"]
+
+MIN_SENT_LEN = 8
+MAX_SENT_LEN = 40
