@@ -4,7 +4,7 @@ import random
 from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
-from Qgen_utils import ngrams, metric, date_eliminator, resolve_prons
+from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons
 
 nlp = spacy.load('en_core_web_sm')
 MIN_SENT_LEN = 8
@@ -136,7 +136,7 @@ def map_ents_to_types(ent_list, doc):
         ent_sent = e.sent
         if doc[init].orth_ == '\n':
             continue
-        
+
         sent_start,sent_end = resolve_prons(all_starts.index(ent_sent.start),doc,nlp)
         sent_id = str(sent_start) + "#" + str(sent_end)
         etype = doc[init].ent_type_
@@ -239,7 +239,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
         :param limit=20: Upper Limit on number of questions to be returned
     """
     ents = get_entities(doc)
-    large_ents = get_entities(doc)
+    large_ents = get_entities(largeDoc)
     if largeDoc is None:
         w2v_model = gen_word2vec(doc)
     else:

@@ -83,14 +83,14 @@ def get_source(doc,ind,verbose=False):
         :param verbose=False: bool, To print logs
     """
     if verbose:
-        print "DOC",doc," :: ID",ind
+        print ("DOC",doc," :: ID",ind)
     pro = doc[ind]
     root = pro.head
     temp = root
     while True:
         prev = temp
         if verbose:
-            print 'temp:',temp
+            print ('temp:',temp)
         if temp.left_edge == pro or temp.left_edge == temp and not temp.head.left_edge == temp:
             temp = temp.head
         else:
@@ -132,7 +132,6 @@ def resolve_prons(sent_num,doc,nlp,sent=None):
     if sent is None:
         sent = list(doc.sents)[sent_num]
     pron_id = hanging_pron(sent)
-    print ("Pron ID:",pron_id)
     if pron_id is not None:
         all_sent_starts = [x.start for x in doc.sents]
         sent_end = sent.end

@@ -64,11 +64,11 @@ def getQuizData(tree , subtopic):
     quizContent = ''
     for container in tree:
         paragraph += container[TOPIC_CONTENT]
-        paragraph += '. '
+        paragraph += ' '
         if(container[TOPIC_NAME] == subtopic):
             quizContent = container[TOPIC_CONTENT]
 
-    paragraph.replace('..' , '.')
+    # paragraph.replace('.. ' , '.')
 
     return paragraph , quizContent
 
