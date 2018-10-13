@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="757b3a5c-5813-4b39-8dae-6bb252567875" name="Default Changelist" comment="Added pojos and doc strings">
-      <change afterPath="$PROJECT_DIR$/QuestionGenerator/Distract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/Constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QuestionGenerator/Qgen.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/Qgen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" beforeDir="false" afterPath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YetAnotherFlaskServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/YetAnotherFlaskServer.py" afterDir="false" />
-    </list>
+    <list default="true" id="757b3a5c-5813-4b39-8dae-6bb252567875" name="Default Changelist" comment="Added pojos and doc strings" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,11 +141,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="281">
-              <caret line="275" column="24" lean-forward="true" selection-start-line="275" selection-start-column="24" selection-end-line="275" selection-end-column="24" />
+            <state relative-caret-position="401">
+              <caret line="225" column="62" lean-forward="true" selection-start-line="225" selection-start-column="62" selection-end-line="225" selection-end-column="62" />
               <folding>
                 <element signature="e#24#36#0" expanded="true" />
-                <marker date="1539426352488" expanded="true" signature="14509:14825" ph="..." />
+                <marker date="1539426850598" expanded="true" signature="12561:12877" ph="..." />
               </folding>
             </state>
           </provider>
@@ -698,11 +690,11 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="275" column="24" lean-forward="true" selection-start-line="275" selection-start-column="24" selection-end-line="275" selection-end-column="24" />
+        <state relative-caret-position="401">
+          <caret line="225" column="62" lean-forward="true" selection-start-line="225" selection-start-column="62" selection-end-line="225" selection-end-column="62" />
           <folding>
             <element signature="e#24#36#0" expanded="true" />
-            <marker date="1539426352488" expanded="true" signature="14509:14825" ph="..." />
+            <marker date="1539426850598" expanded="true" signature="12561:12877" ph="..." />
           </folding>
         </state>
       </provider>
