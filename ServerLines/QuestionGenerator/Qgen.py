@@ -215,11 +215,13 @@ def gen_sents(doc,limit=20,largeDoc = None):
         :param limit=20: Upper Limit on number of questions to be returned
     """
     ents = get_entities(doc)
+    large_ents = get_entities(doc)
     if largeDoc is None:
         w2v_model = gen_word2vec(doc)
     else:
-        w2v_model = gen_word2vec_from_content(largeDoc)
+        w2v_model = gen_word2vec(largeDoc)
     ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
+    large_ent2type, large_type2ent, large_counter, large_sent2ent = map_ents_to_types(large_ents, largeDoc)
     result = []
     for sentID in sent2ent:
         # Iterating over all sentences that contain entities
@@ -232,7 +234,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
         if ent1 == ent2:
             # Options : All entities of the same type as target but not present in question
             # Also add target to options
-            options = [i for i in type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
+            options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
 
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
@@ -248,7 +250,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
 
         else:
             # For Entity 1
-            options = [i for i in type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
+            options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
             elif len(options) < 3:
@@ -263,7 +265,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
             result.append(sample)
 
             # For Entity 2
-            options = [i for i in type2ent[ent2type[ent2]] if i not in sent2ent[sentID]] + [ent2]
+            options = [i for i in large_type2ent[ent2type[ent2]] if i not in sent2ent[sentID]] + [ent2]
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2])[:3]
             elif len(options) < 3:
@@ -292,7 +294,8 @@ def getWikiQuestions(allContent , quizContent):
     """
 
     quizDoc = get_doc(quizContent)
-    questionsArray = gen_sents(quizDoc , largeDoc=allContent)
+    allDoc = get_doc(allContent)
+    questionsArray = gen_sents(quizDoc, largeDoc=allDoc)
     return questionsArray
 
 
