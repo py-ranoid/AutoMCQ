@@ -62,6 +62,10 @@ def date_eliminator(answer,options):
         return options
 
 def join_sents(doc):
+    """
+    Join sentences in a spacy document with commas & "and"
+        :param doc: spacy doc object, Document
+    """
     sents = list(doc.sents)
     fin_sent = sents[0].text
     for s in sents[1:-1]:
@@ -70,6 +74,12 @@ def join_sents(doc):
     return fin_sent
 
 def get_source(doc,ind,verbose=False):
+    """
+    Trace pronoun backwards along doc to find source  (proper noun)
+        :param doc: spacy doc object, Document
+        :param ind: int, Index of pronoun in document
+        :param verbose=False: bool, To print logs
+    """
     if verbose:
         print "DOC",doc," :: ID",ind
     pro = doc[ind]
@@ -97,6 +107,11 @@ def get_source(doc,ind,verbose=False):
     return temp
 
 def hanging_pron(sent):
+    """
+    Checks if sentence has a hanging pronoun, 
+    ie. pronoun that refers to a noun that isn't present in the sentence
+        :param sent: spacy doc object, Sentence to be checked.
+    """
     init_id = 0
     for w in sent:
         init_id = w.i if init_id == 0 else init_id
@@ -105,6 +120,13 @@ def hanging_pron(sent):
     return None
 
 def resolve_prons(sent_num,doc,nlp,sent=None):
+    """
+    Checks and resolves hanging pronouns by expanding scope.
+        :param sent_num: int, Sentence number
+        :param doc: spacy doc object, Document
+        :param nlp: spacy NLP model
+        :param sent=None: 
+    """
     if sent is None:
         sent = list(doc.sents)[sent_num]
     pron_id = hanging_pron(sent)
