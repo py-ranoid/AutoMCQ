@@ -146,9 +146,10 @@ def get_w2v_model():
     MODEL_PATH = '/home/b/Downloads/GoogleNews-vectors-negative300.bin.gz'    
     if not os.path.exists(MODEL_PATH):
         raise ValueError("SKIP: You need to download the google news model")
-    model = KeyedVectors.load_word2vec_format(MODEL_PATH, binary=True)
+    model = KeyedVectors.load_word2vec_format(MODEL_PATH, binary=True,limit=3000)
     return model
 
+"""
 w2v_model = get_w2v_model()
 
 def get_w2v_options(source_word,nlp):
@@ -159,3 +160,4 @@ def get_w2v_options(source_word,nlp):
         if not nlp(unicode(word))[0].lemma_ == word_lemma and source_word.lower() not in word.lower():
             opts.append(word.replace('_',' '))
     return opts
+"""

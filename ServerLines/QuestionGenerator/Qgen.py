@@ -92,6 +92,7 @@ def find_best_options(options, w2v_model, answer,ent_type):
     """
     # Convert answer to lowercase and create trigrams
     ans_low = answer.lower()
+    ans_set = set(word_tokenize(ans_low))
     source = word_tokenize(ans_low)
     source_grams = ngrams(ans_low, 3)
 
@@ -102,6 +103,9 @@ def find_best_options(options, w2v_model, answer,ent_type):
     for opt in options:
         # Eliminate options that have too many common ngrams
         opt_low = opt.lower()
+        opt_set = set(word_tokenize(opt_low))
+        if len(opt_set.union(ans_set)) ==len(ans_set):
+            distances[opt] = 20
         if opt == answer:
             continue
         opt_grams = ngrams(opt_low, 3)
