@@ -289,7 +289,7 @@ def get_noun_sents(doc,skip_sent_ids=set()):
         all_sents.append(sample)
     return all_sents,sent2nouns.keys()
 
-
+        
 
 
 def choose_ent(ents, counter, ent2type, mul_priority=False, weight=20):
@@ -416,8 +416,12 @@ def gen_sents(doc,limit=20,largeDoc = None):
             result.append(sample)
     
     # Sort by entity type, choose top 20 and then shuffle.
-    if len(result)<limit/20:
-        result+=get_verb_qs(doc)
+    if len(result)<limit/2:
+        verb_qs,verb_sents = get_verb_qs(doc)
+        result+=verb_qs
+    if len(result)<limit:
+        noun_qs,_ = get_noun_sents(doc,verb_sents)
+        result+=noun_qs
     result.sort(key=lambda x:ENTITY_PRIORITIES[x['Type']])
     result = result[:limit]
     random.shuffle(result)
