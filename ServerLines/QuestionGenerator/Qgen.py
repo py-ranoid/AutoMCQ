@@ -211,13 +211,17 @@ def get_verb_qs(doc):
     questions = []
     for s in sent_verbs:
         sent = sentID2sent(s,doc)[0]
-        ans=sent_verbs[s].pop().lower()
-        options = sorted(all_verbs,key=lambda x:w2v_model.similarity(ans,x),reverse=True)[:3]
+        ans=sent_verbs[s].pop()
+        options = sorted(all_verbs,key=lambda x:w2v_model.similarity(ans.lower(),x),reverse=True)[:3]
+        if len(options) <3:
+            continue
+        random.shuffle(options)
         sample = {"Question": sent.replace(ans, "_________"),
             "Answer": ans,
             "Options": options,
             "Type": "VERB"}
         questions.append(sample)
+    return questions,sent_verbs.keys()
 
 
 def noun_picker(doc):
