@@ -152,11 +152,19 @@ def get_w2v_model():
 
 w2v_model = get_w2v_model()
 
-def get_w2v_options(source_word,nlp):
-    word_lemma = nlp(unicode(source_word))[0].lemma_
+def get_w2v_options(source_word,nlp,check_lemma=True):
+    word_doc = nlp(unicode(source_word))
+    if len(word_doc) > 1:
+        check_lemma=False
+    else:
+        word_lemma = word_doc[0].lemma_
     sims = w2v_model.similar_by_word(source_word.replace(" ","_"))
     opts = []
     for word,_ in sims:
-        if not nlp(unicode(word))[0].lemma_ == word_lemma and source_word.lower() not in word.lower():
-            opts.append(word.replace('_',' '))
+        if source_word.lower() not in word.lower():
+            if check_lemma:
+                if not nlp(unicode(word))[0].lemma_ == word_lemma:
+                    opts.append(word.replace('_',' '))
+            else:
+                opts.append(word.replace('_',' '))
     return opts

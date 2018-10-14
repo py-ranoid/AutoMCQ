@@ -6,7 +6,7 @@ from nltk import word_tokenize,sent_tokenize
 from gensim.models import Word2Vec
 from spacy.symbols import ORTH
 from nltk.stem.porter import PorterStemmer
-from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model
+from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model,get_w2v_options
 from QuestionGenerator.Distract import datesDistract
 from Constants import *
 
