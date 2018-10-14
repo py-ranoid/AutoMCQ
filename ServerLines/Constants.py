@@ -32,7 +32,7 @@ MESSAGE = 'message'
 STATUS_CODE = 'status_code'
 DEFAULT_MESSAGE = 'Default Message'
 DEFAULT_USER = '{"name":"testUSER","mailId":"test@meh.com","uid":"testUSER"}'
-
+NUM_QUESTIONS = 'numQuestions'
 MINIMUM_LENGTH_SUB_TOPIC = 8
 MINIMUM_LENGTH_TOPIC = 40
 
@@ -51,3 +51,5 @@ MAX_SENT_LEN = 40
 QUIZ_FOR_TEXT = 'TEXT2QUIZ'
 QUIZ_FOR_WIKI_TOPIC = 'WIKI2QUIZ'
 QUIZ_FOR_KHAN = 'KHAN2QUIZ'
+
+ENT_DATE = "DATE"

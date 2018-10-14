@@ -4,14 +4,16 @@ import random
 from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
-from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons
-from Constants import *
+from spacy.symbols import ORTH
+from nltk.stem.porter import PorterStemmer
 from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model
 from QuestionGenerator.Distract import datesDistract
+from Constants import *
+
 from QuestionGenerator import PDFManip as manip
 
 nlp = spacy.load('en_core_web_sm')
-
+stemmer = PorterStemmer()
 TEST_TEXT = """
 The Battle of Plassey was a decisive victory of the British East India Company over the Nawab of Bengal and his French allies on 23 June 1757. The battle consolidated the Company's presence in Bengal, which later expanded to cover much of India over the next hundred years. The battle took place at Palashi (Anglicised version: Plassey) on the banks of the Hooghly River, about 150 kilometres (93 mi) north of Calcutta and south of Murshidabad, then capital of Bengal (now in Nadia district in West Bengal). The belligerents were the Nawab Sirajuddaulah, the last independent Nawab of Bengal, and the British East India Company. Siraj-ud-daulah had become the Nawab of Bengal the year before, and he ordered the English to stop the extension of their fortification. Robert Clive bribed Mir Jafar, the commander in chief of the Nawab's army, and also promised him to make him Nawab of Bengal. He defeated the Nawab at Plassey in 1757 and captured Calcutta. The battle was preceded by the attack on British-controlled Calcutta by Nawab Siraj-ud-daulah and the Black Hole massacre. The British sent reinforcements under Colonel Robert Clive and Admiral Charles Watson from Madras to Bengal and recaptured Calcutta. Clive then seized the initiative to capture the French fort of Chandernagar. Tensions and suspicions between Siraj-ud-daulah and the British culminated in the Battle of Plassey. The battle was waged during the Seven Years' War (1756–1763), and, in a mirror of their European rivalry, the French East India Company (La Compagnie des Indes Orientales) sent a small contingent to fight against the British. Siraj-ud-Daulah had a numerically superior force and made his stand at Plassey. The British, worried about being outnumbered, formed a conspiracy with Siraj-ud-Daulah's demoted army chief Mir Jafar, along with others such as Yar Lutuf Khan, Jagat Seths (Mahtab Chand and Swarup Chand), Omichund and Rai Durlabh. Mir Jafar, Rai Durlabh and Yar Lutuf Khan thus assembled their troops near the battlefield but made no move to actually join the battle. Siraj-ud-Daulah's army with 50,000 soldiers, 40 cannons and 10 war elephants was defeated by 3,000 soldiers of Col. Robert Clive, owing to the flight of Siraj-ud-daulah from the battlefield and the inactivity of the conspirators. The battle ended in 11 hours. This is judged to be one of the pivotal battles in the control of Indian subcontinent by the colonial powers. The British now wielded enormous influence over the Nawab and consequently acquired significant concessions for previous losses and revenue from trade. The British further used this revenue to increase their military might and push the other European colonial powers such as the Dutch and the French out of South Asia, thus expanding the British Empire.
 #""".strip()
@@ -37,6 +39,7 @@ ENTITY_PRIORITIES = {
     "ORDINAL": 6,
     "CARDINAL": 2,
     "VERB":10,
+    "NOUN": 8
 }
 
 
@@ -101,10 +104,11 @@ def find_best_options(options, w2v_model, answer,ent_type , sentence):
     source_grams = ngrams(ans_low, 3)
 
     distances = {}
-    if ent_type == "DATE":
+    if ent_type == ENT_DATE:
         try:
             return datesDistract(answer)
-        except:
+        except Exception as ex:
+            print(str(ex))
             options = date_eliminator(answer,options)
         # TODO If reduced options are too few, add synthetic date discriminators
     for opt in options:
@@ -155,7 +159,11 @@ def map_ents_to_types(ent_list, doc):
         if doc[init].orth_ == '\n':
             continue
 
-        sent_start,sent_end = resolve_prons(all_starts.index(ent_sent.start),doc,nlp)
+        try:
+            sent_start,sent_end = resolve_prons(all_starts.index(ent_sent.start),doc,nlp)
+        except Exception as ex:
+            print('Hung over : ' + str(ex))
+            sent_start, sent_end = ent_sent.start , ent_sent.end
         sent_id = str(sent_start) + "#" + str(sent_end)
         etype = doc[init].ent_type_
 
@@ -215,20 +223,97 @@ def verb_picker(doc):
     else:
         return active_sents2verbs
 
+def get_w2v_sim(a,b):
+    try:return w2v_model.similarity(a, b)
+    except KeyError:return 999
+
 def get_verb_qs(doc):
     sent_verbs = verb_picker(doc)
     all_verbs = set([x.lower_ for x in doc if x.pos_=="VERB" and len(x.sent)< MAX_SENT_LEN and not x.is_stop])
     questions = []
     for s in sent_verbs:
         sent = sentID2sent(s,doc)[0]
-        ans=sent_verbs[s].pop().lower()
-        options = sorted(all_verbs,key=lambda x:w2v_model.similarity(ans,x),reverse=True)[:3]
-        sample = {"Question": sent.replace(ans, "_________"),
-            "Answer": ans,
-            "Options": options,
-            "Type": "VERB"}
+        ans=sent_verbs[s].pop()
+        print (ans.lower(),list(all_verbs)[0])
+        options = sorted(all_verbs, key=lambda x:get_w2v_sim(ans.lower(),x),reverse=True)[:3]
+        if len(options) <3:
+            continue
+        random.shuffle(options)
+        sample = {QUESTION: sent.replace(ans, "_________"),
+            ANSWER: ans,
+            OPTIONS: options,
+            ANSWER_TYPE: "VERB"}
         questions.append(sample)
-    return questions
+    return questions,sent_verbs.keys()
+
+
+def noun_picker(doc):
+    counts = doc.count_by(ORTH)
+    word_counter = {}
+    for word_id, count in sorted(counts.items(), reverse=True, key=lambda item: item[1]):
+        word = stemmer.stem(nlp(nlp.vocab.strings[word_id])[0].lemma_)
+        word_counter[word] = word_counter.get(word,0)+count
+
+    all_nouns = set()
+    sent2nouns = {}
+    noun_counts = {}
+    sent_mins ={}
+    for x in doc.noun_chunks:
+        if len(x.orth_) < 4 or len(x)>3:continue
+        start =x.start
+        for y in x:
+            if not y.is_stop and not y.lower_=='the':
+                start = y.i
+                break
+        noun = doc[start:x.end]
+        sent_id = str(x.sent.start)+"#"+str(x.sent.end)
+        all_nouns.add(noun.lower_)
+        if not noun.lower_ in noun_counts:
+            noun_counts[noun.lower_] = sum([word_counter[stemmer.stem(nlp(x.orth_)[0].lemma_)] for x in noun])/len(noun)
+        if noun_counts[noun.lower_] < sent_mins.get(sent_id,50):
+            sent2nouns[sent_id] = set([noun.lower_])
+            sent_mins[sent_id] = noun_counts[noun.lower_]
+        elif noun_counts[noun.lower_] == sent_mins.get(sent_id,50):
+            sent2nouns[sent_id] = sent2nouns[sent_id].union(set([noun.lower_]))
+    return all_nouns, sent2nouns
+
+
+def get_noun_opts(all_nouns,target,sent):
+    target_words = word_tokenize(target.lower())
+    candidates = sorted(list(all_nouns),key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x)))[:6]
+    return [x for x in candidates if not x in sent][:2] + [target]
+
+
+def get_noun_sents(doc,skip_sent_ids=set()):
+    all_nouns, sent2nouns = noun_picker(doc)
+    all_sents = []
+    for sent_id in sent2nouns:
+        if sent_id in skip_sent_ids:
+            continue
+        sent = sentID2sent(sent_id,doc)[0]
+        targets = sent2nouns[sent_id]
+        if len(targets) == 1:
+            target = targets.pop()
+            try:
+                options = get_w2v_options(target,nlp)[:3]
+            except:
+                options = get_noun_opts(all_nouns,target,sent)
+        else:
+            target = random.sample(list(targets),1)[0]
+            options = get_noun_opts(all_nouns,target,sent)
+        if len(options) < 3:
+            continue
+        random.shuffle(options)
+        sample = {
+            QUESTION: sent.replace(target, "_________"),
+            ANSWER: target,
+            OPTIONS: options,
+            ANSWER_TYPE: "NOUN"
+        }
+        if "_________" not in sample["Question"]:continue
+        all_sents.append(sample)
+    return all_sents,sent2nouns.keys()
+
 
 
 
@@ -285,7 +370,7 @@ def print_results(sents):
     print(len(sents))
 
 
-def gen_sents(doc,limit=20,largeDoc = None):
+def gen_sents(doc,limit=15,largeDoc = None):
     """
     Get list of sentences and options from given spacy doc object.
         :param doc: Spacy Doc object, Used to create questions
@@ -300,14 +385,15 @@ def gen_sents(doc,limit=20,largeDoc = None):
         w2v_model = gen_word2vec(largeDoc)
         large_type2ent = map_ents_to_types_only(large_ents, largeDoc)
 
-    ent2type, large_type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
+    ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
 
 
     result = []
     for sentID in sent2ent:
         # Iterating over all sentences that contain entities
         ent1 = choose_ent(sent2ent[sentID], counter, ent2type)
-        ent2 = choose_ent(sent2ent[sentID], counter, ent2type, True)
+        # ent2 = choose_ent(sent2ent[sentID], counter, ent2type, True)
+        ent2 = ent1
         sentence, sent_len = sentID2sent(sentID, doc)
         # Discarding sentences that are too long or too short
         if sent_len < MIN_SENT_LEN or sent_len > MAX_SENT_LEN:
@@ -318,9 +404,10 @@ def gen_sents(doc,limit=20,largeDoc = None):
             options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
 
             if len(options) > 3:
+                print(ent1 , sentence)
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1] , sentence)[:3]
             elif len(options) < 3:
-                if (ent2type[ent1] == "DATE"):
+                if (ent2type[ent1] == ENT_DATE):
                     try:
                         options = datesDistract(ent1)
                     except Exception  as ex:
@@ -328,10 +415,10 @@ def gen_sents(doc,limit=20,largeDoc = None):
                 else:
                     continue
             random.shuffle(options)
-            sample = {"Question": sentence.replace(ent1, "_________"),
-                      "Answer": ent1,
-                      "Options": options,
-                      "Type": ent2type[ent1]}
+            sample = {QUESTION: sentence.replace(ent1, "_________"),
+                      ANSWER: ent1,
+                      OPTIONS: options,
+                      ANSWER_TYPE: ent2type[ent1]}
             result.append(sample)
 
         else:
@@ -340,7 +427,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1] , sentence)[:3]
             elif len(options) < 3:
-                if(ent2type[ent1] == "DATE"):
+                if(ent2type[ent1] == ENT_DATE):
                     try:
                         options = datesDistract(ent1)
                     except Exception  as ex:
@@ -348,10 +435,10 @@ def gen_sents(doc,limit=20,largeDoc = None):
                 else:
                     continue
             random.shuffle(options)
-            sample = {"Question": sentence.replace(ent1, "_________"),
-                      "Answer": ent1,
-                      "Options": options,
-                      "Type": ent2type[ent1]}
+            sample = {QUESTION: sentence.replace(ent1, "_________"),
+                      ANSWER: ent1,
+                      OPTIONS: options,
+                      ANSWER_TYPE: ent2type[ent1]}
             result.append(sample)
 
             # For Entity 2
@@ -359,7 +446,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2] , sentence)[:3]
             elif len(options) < 3:
-                if (ent2type[ent1] == "DATE"):
+                if (ent2type[ent1] == ENT_DATE):
                     try:
                         options = datesDistract(ent1)
                     except Exception  as ex:
@@ -375,12 +462,24 @@ def gen_sents(doc,limit=20,largeDoc = None):
             result.append(sample)
     
     # Sort by entity type, choose top 20 and then shuffle.
-    if len(result)<limit/20:
-        result+=get_verb_qs(doc)
-    result.sort(key=lambda x:ENTITY_PRIORITIES[x['Type']])
-    result = result[:limit]
-    random.shuffle(result)
-    
+    verb_sents = set()
+    verb_qs = set()
+
+    if len(result) < limit:
+        noun_qs,_ = get_noun_sents(doc,verb_sents)
+        result += random.sample(noun_qs , min(limit - len(result) , len(noun_qs)))
+
+    if len(result)<limit:
+        verb_qs,verb_sents = get_verb_qs(doc)
+        result += random.sample(verb_qs, min(limit - len(result), len(verb_qs)))
+
+
+    result.sort(key=lambda x:ENTITY_PRIORITIES[x[ANSWER_TYPE]] , reverse=True)
+
+    print("Number of questions generated (N,O): "  , len(verb_qs) , len(result) - len(verb_qs))
+    result = result[:limit*3]
+    result = random.sample(result , min(limit , len(result)))
+
     return result
 
 def getWikiQuestions(allContent , quizContent):

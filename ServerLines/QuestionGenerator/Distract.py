@@ -94,11 +94,11 @@ def datesDistract(date):
 
         yearValue = re.findall(S_YEAR_REGEX , date)
         yearFlag = True if len(yearValue) > 0 else False
-        index = re.search(S_YEAR_REGEX , date).start()
-        date = re.sub(S_YEAR_REGEX , '' , date)
-
 
         if(yearFlag):
+            index = re.search(S_YEAR_REGEX, date).start()
+            date = re.sub(S_YEAR_REGEX, '', date)
+
             actual = int(yearValue[0])
             finalString = date[:index] + ' ' + str(actual) + 's' + ' ' + date[index:]
 
@@ -110,8 +110,28 @@ def datesDistract(date):
             op = -1 if randint(0 , 4) < 2 else 1
             option2 = date[:index] + ' ' + str(actual + op*random2*10) + 's' + ' ' + date[index:]
 
-        # print([finalString , option1 , option2])
-        return [removeTrailingSpace(finalString) , removeTrailingSpace(option1) , removeTrailingSpace(option2)]
+        return [removeTrailingSpace(finalString), removeTrailingSpace(option1), removeTrailingSpace(option2)]
+
+        # TH_YEAR_REGEX = r'([0-9]{2})th'
+        # yearValue = re.findall(TH_YEAR_REGEX, date)
+        # yearFlag = True if len(yearValue) > 0 else False
+        #
+        # if (yearFlag):
+        #     index = re.search(TH_YEAR_REGEX, date).start()
+        #     date = re.sub(TH_YEAR_REGEX, '', date)
+        #
+        #     actual = int(yearValue[0])
+        #     finalString = date[:index] + ' ' + str(actual) + 'th' + ' ' + date[index:]
+        #
+        #     random1 = randint(1, 3)
+        #     op = -1 if randint(0, 4) < 2 else 1
+        #     option1 = date[:index] + ' ' + str(actual + op * random1) + 'th' + ' ' + date[index:]
+        #
+        #     random2 = randint(1, 3)
+        #     op = -1 if randint(0, 4) < 2 else 1
+        #     option2 = date[:index] + ' ' + str(actual + op * random2) + 'th' + ' ' + date[index:]
+        # # print([finalString , option1 , option2])
+        #     return [removeTrailingSpace(finalString), removeTrailingSpace(option1), removeTrailingSpace(option2)]
 
     except Exception as ex:
         raise ex
