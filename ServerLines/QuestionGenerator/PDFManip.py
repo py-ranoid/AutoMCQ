@@ -10,21 +10,21 @@ def performSmartCorrections(content):
     content = removeSlashN(content)
     return content
 
-def removeSlashN(content):
+def stringifyContent(content):
     if sys.version_info[0]  < 3:
         content = unicode(content)
     else:
         content = str(content)
+    return content
+def removeSlashN(content):
+    content = stringifyContent(content)
     content = content.replace('\r\n',' ')
     content = content.replace('\n' , ' ')
     content = re.sub(r' +' , ' ' , content)
     return content
 
 def removeSlashQuotes(content):
-    if sys.version_info[0]  < 3:
-        content = unicode(content)
-    else:
-        content = str(content)
+    content = stringifyContent(content)
     content = content.replace('\"', ' ')
     content = re.sub(r' +', ' ', content)
     content = removeInitialSpace(content)
@@ -33,6 +33,20 @@ def removeSlashQuotes(content):
 def removeInitialSpace(content):
     if content[0] == ' ':
         content = content[1:]
+    return content
+
+def removeTrailingContent(content):
+    while(True):
+        if content[-1] == ' ':
+            content = content[:-1]
+        elif content[-1] == '.':
+            content = content[:-1]
+        elif content[-1] == '_':
+            content = content[:-1]
+        elif content[-1] == '-':
+            content = content[:-1]
+        else:
+            break
     return content
 
 def getPdfFileObject(pdf):

@@ -10,6 +10,8 @@ from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolv
 from QuestionGenerator.Distract import datesDistract
 from Constants import *
 
+from QuestionGenerator import PDFManip as manip
+
 nlp = spacy.load('en_core_web_sm')
 stemmer = PorterStemmer()
 TEST_TEXT = """
@@ -37,6 +39,7 @@ ENTITY_PRIORITIES = {
     "ORDINAL": 6,
     "CARDINAL": 2,
     "VERB":10,
+    "NOUN": 8
 }
 
 
@@ -101,10 +104,11 @@ def find_best_options(options, w2v_model, answer,ent_type , sentence):
     source_grams = ngrams(ans_low, 3)
 
     distances = {}
-    if ent_type == "DATE":
+    if ent_type == ENT_DATE:
         try:
             return datesDistract(answer)
-        except:
+        except Exception as ex:
+            print(str(ex))
             options = date_eliminator(answer,options)
         # TODO If reduced options are too few, add synthetic date discriminators
     for opt in options:
@@ -155,7 +159,11 @@ def map_ents_to_types(ent_list, doc):
         if doc[init].orth_ == '\n':
             continue
 
-        sent_start,sent_end = resolve_prons(all_starts.index(ent_sent.start),doc,nlp)
+        try:
+            sent_start,sent_end = resolve_prons(all_starts.index(ent_sent.start),doc,nlp)
+        except Exception as ex:
+            print('Hung over : ' + str(ex))
+            sent_start, sent_end = ent_sent.start , ent_sent.end
         sent_id = str(sent_start) + "#" + str(sent_end)
         etype = doc[init].ent_type_
 
@@ -215,6 +223,10 @@ def verb_picker(doc):
     else:
         return active_sents2verbs
 
+def get_w2v_sim(a,b):
+    try:return w2v_model.similarity(a, b)
+    except KeyError:return 999
+
 def get_verb_qs(doc):
     sent_verbs = verb_picker(doc)
     all_verbs = set([x.lower_ for x in doc if x.pos_=="VERB" and len(x.sent)< MAX_SENT_LEN and not x.is_stop])
@@ -222,14 +234,15 @@ def get_verb_qs(doc):
     for s in sent_verbs:
         sent = sentID2sent(s,doc)[0]
         ans=sent_verbs[s].pop()
-        options = sorted(all_verbs,key=lambda x:w2v_model.similarity(ans.lower(),x),reverse=True)[:3]
+        print (ans.lower(),list(all_verbs)[0])
+        options = sorted(all_verbs, key=lambda x:get_w2v_sim(ans.lower(),x),reverse=True)[:3]
         if len(options) <3:
             continue
         random.shuffle(options)
-        sample = {"Question": sent.replace(ans, "_________"),
-            "Answer": ans,
-            "Options": options,
-            "Type": "VERB"}
+        sample = {QUESTION: sent.replace(ans, "_________"),
+            ANSWER: ans,
+            OPTIONS: options,
+            ANSWER_TYPE: "VERB"}
         questions.append(sample)
     return questions,sent_verbs.keys()
 
@@ -256,7 +269,7 @@ def noun_picker(doc):
         sent_id = str(x.sent.start)+"#"+str(x.sent.end)
         all_nouns.add(noun.lower_)
         if not noun.lower_ in noun_counts:
-            noun_counts[noun.lower_] = sum([word_counter[stemmer.stem(x.lemma_)] for x in noun])/len(noun)
+            noun_counts[noun.lower_] = sum([word_counter[stemmer.stem(nlp(x.orth_)[0].lemma_)] for x in noun])/len(noun)
         if noun_counts[noun.lower_] < sent_mins.get(sent_id,50):
             sent2nouns[sent_id] = set([noun.lower_])
             sent_mins[sent_id] = noun_counts[noun.lower_]
@@ -279,10 +292,12 @@ def get_noun_sents(doc,skip_sent_ids=set()):
             continue
         sent = sentID2sent(sent_id,doc)[0]
         targets = sent2nouns[sent_id]
-        if len(targets) ==1:
+        if len(targets) == 1:
             target = targets.pop()
-            try: options = get_w2v_options(target,nlp)[:3]
-            except: options = get_noun_opts(all_nouns,target,sent)
+            try:
+                options = get_w2v_options(target,nlp)[:3]
+            except:
+                options = get_noun_opts(all_nouns,target,sent)
         else:
             target = random.sample(list(targets),1)[0]
             options = get_noun_opts(all_nouns,target,sent)
@@ -290,16 +305,16 @@ def get_noun_sents(doc,skip_sent_ids=set()):
             continue
         random.shuffle(options)
         sample = {
-            "Question": sent.replace(target, "_________"),
-            "Answer": target,
-            "Options": options,
-            "Type": "NOUN"
+            QUESTION: sent.replace(target, "_________"),
+            ANSWER: target,
+            OPTIONS: options,
+            ANSWER_TYPE: "NOUN"
         }
         if "_________" not in sample["Question"]:continue
         all_sents.append(sample)
     return all_sents,sent2nouns.keys()
 
-        
+
 
 
 def choose_ent(ents, counter, ent2type, mul_priority=False, weight=20):
@@ -355,7 +370,7 @@ def print_results(sents):
     print(len(sents))
 
 
-def gen_sents(doc,limit=20,largeDoc = None):
+def gen_sents(doc,limit=15,largeDoc = None):
     """
     Get list of sentences and options from given spacy doc object.
         :param doc: Spacy Doc object, Used to create questions
@@ -370,14 +385,15 @@ def gen_sents(doc,limit=20,largeDoc = None):
         w2v_model = gen_word2vec(largeDoc)
         large_type2ent = map_ents_to_types_only(large_ents, largeDoc)
 
-    ent2type, large_type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
+    ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
 
 
     result = []
     for sentID in sent2ent:
         # Iterating over all sentences that contain entities
         ent1 = choose_ent(sent2ent[sentID], counter, ent2type)
-        ent2 = choose_ent(sent2ent[sentID], counter, ent2type, True)
+        # ent2 = choose_ent(sent2ent[sentID], counter, ent2type, True)
+        ent2 = ent1
         sentence, sent_len = sentID2sent(sentID, doc)
         # Discarding sentences that are too long or too short
         if sent_len < MIN_SENT_LEN or sent_len > MAX_SENT_LEN:
@@ -388,15 +404,21 @@ def gen_sents(doc,limit=20,largeDoc = None):
             options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
 
             if len(options) > 3:
+                print(ent1 , sentence)
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1] , sentence)[:3]
             elif len(options) < 3:
-                # TODO generate more options
-                continue
+                if (ent2type[ent1] == ENT_DATE):
+                    try:
+                        options = datesDistract(ent1)
+                    except Exception  as ex:
+                        continue
+                else:
+                    continue
             random.shuffle(options)
-            sample = {"Question": sentence.replace(ent1, "_________"),
-                      "Answer": ent1,
-                      "Options": options,
-                      "Type": ent2type[ent1]}
+            sample = {QUESTION: sentence.replace(ent1, "_________"),
+                      ANSWER: ent1,
+                      OPTIONS: options,
+                      ANSWER_TYPE: ent2type[ent1]}
             result.append(sample)
 
         else:
@@ -405,14 +427,18 @@ def gen_sents(doc,limit=20,largeDoc = None):
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1] , sentence)[:3]
             elif len(options) < 3:
-                # TODO generate more options
-                # TODO If entity type is date, add synthetic date discriminators
-                continue
+                if(ent2type[ent1] == ENT_DATE):
+                    try:
+                        options = datesDistract(ent1)
+                    except Exception  as ex:
+                        continue
+                else:
+                    continue
             random.shuffle(options)
-            sample = {"Question": sentence.replace(ent1, "_________"),
-                      "Answer": ent1,
-                      "Options": options,
-                      "Type": ent2type[ent1]}
+            sample = {QUESTION: sentence.replace(ent1, "_________"),
+                      ANSWER: ent1,
+                      OPTIONS: options,
+                      ANSWER_TYPE: ent2type[ent1]}
             result.append(sample)
 
             # For Entity 2
@@ -420,8 +446,14 @@ def gen_sents(doc,limit=20,largeDoc = None):
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2] , sentence)[:3]
             elif len(options) < 3:
-                # TODO generate more options
-                continue
+                if (ent2type[ent1] == ENT_DATE):
+                    try:
+                        options = datesDistract(ent1)
+                    except Exception  as ex:
+                        continue
+
+                else:
+                    continue
             random.shuffle(options)
             sample = {QUESTION: sentence.replace(ent2, "_________"),
                       ANSWER: ent2,
@@ -430,16 +462,24 @@ def gen_sents(doc,limit=20,largeDoc = None):
             result.append(sample)
     
     # Sort by entity type, choose top 20 and then shuffle.
-    if len(result)<limit/2:
-        verb_qs,verb_sents = get_verb_qs(doc)
-        result+=verb_qs
-    if len(result)<limit:
+    verb_sents = set()
+    verb_qs = set()
+
+    if len(result) < limit:
         noun_qs,_ = get_noun_sents(doc,verb_sents)
-        result+=noun_qs
-    result.sort(key=lambda x:ENTITY_PRIORITIES[x['Type']])
-    result = result[:limit]
-    random.shuffle(result)
-    
+        result += random.sample(noun_qs , min(limit - len(result) , len(noun_qs)))
+
+    if len(result)<limit:
+        verb_qs,verb_sents = get_verb_qs(doc)
+        result += random.sample(verb_qs, min(limit - len(result), len(verb_qs)))
+
+
+    result.sort(key=lambda x:ENTITY_PRIORITIES[x[ANSWER_TYPE]] , reverse=True)
+
+    print("Number of questions generated (N,O): "  , len(verb_qs) , len(result) - len(verb_qs))
+    result = result[:limit*3]
+    result = random.sample(result , min(limit , len(result)))
+
     return result
 
 def getWikiQuestions(allContent , quizContent):
@@ -461,8 +501,8 @@ def capitalizeEverything(questionArray):
     for questionInfo in questionArray:
         questions.append({
             QUESTION: questionInfo[QUESTION],
-            ANSWER: questionInfo[ANSWER].upper(),
-            OPTIONS: [option.upper() for option in questionInfo[OPTIONS]],
+            ANSWER: manip.removeTrailingContent(questionInfo[ANSWER].upper()),
+            OPTIONS: [manip.removeTrailingContent(option.upper()) for option in questionInfo[OPTIONS]],
             ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
         })
 

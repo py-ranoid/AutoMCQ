@@ -1,6 +1,7 @@
 from re import findall
 from gensim.models import KeyedVectors
 import os
+import QuestionGenerator.PDFManip as manip
 
 def ngrams(text, n):    
     return set([text[i:i + n] for i in range(len(text) - n)])
@@ -129,6 +130,7 @@ def resolve_prons(sent_num,doc,nlp,sent=None):
         :param nlp: spacy NLP model
         :param sent=None: 
     """
+
     if sent is None:
         sent = list(doc.sents)[sent_num]
     pron_id = hanging_pron(sent)
@@ -153,7 +155,7 @@ def get_w2v_model():
 w2v_model = get_w2v_model()
 
 def get_w2v_options(source_word,nlp,check_lemma=True):
-    word_doc = nlp(unicode(source_word))
+    word_doc = nlp(manip.stringifyContent(source_word))
     if len(word_doc) > 1:
         check_lemma=False
     else:
@@ -163,7 +165,7 @@ def get_w2v_options(source_word,nlp,check_lemma=True):
     for word,_ in sims:
         if source_word.lower() not in word.lower():
             if check_lemma:
-                if not nlp(unicode(word))[0].lemma_ == word_lemma:
+                if not nlp(manip.stringifyContent(word))[0].lemma_ == word_lemma:
                     opts.append(word.replace('_',' '))
             else:
                 opts.append(word.replace('_',' '))

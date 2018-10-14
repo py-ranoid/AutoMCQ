@@ -9,6 +9,7 @@ class QuestionReponse(BaseResponse):
     """
     def setQuestions(self, questions):
         self.response[QUESTIONS] = questions
+        self.response[NUM_QUESTIONS] = len(questions)
         if(len(questions) == 0):
             raise ServerError(NO_QUESTIONS)
 
