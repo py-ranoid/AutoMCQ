@@ -33,6 +33,20 @@ def removeSlashQuotes(content):
 def removeInitialSpace(content):
     if content[0] == ' ':
         content = content[1:]
+    return contente
+
+def removeTrailingContent(content):
+    while(True):
+        if content[-1] == ' ':
+            content = content[:-1]
+        elif content[-1] == '.':
+            content = content[:-1]
+        elif content[-1] == '_':
+            content = content[:-1]
+        elif content[-1] == '-':
+            content = content[:-1]
+        else:
+            break
     return content
 
 def getPdfFileObject(pdf):

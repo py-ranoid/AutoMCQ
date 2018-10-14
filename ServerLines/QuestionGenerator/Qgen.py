@@ -8,6 +8,8 @@ from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolv
 from Constants import *
 from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model
 from QuestionGenerator.Distract import datesDistract
+from QuestionGenerator import PDFManip as manip
+
 nlp = spacy.load('en_core_web_sm')
 
 TEST_TEXT = """
@@ -318,8 +320,13 @@ def gen_sents(doc,limit=20,largeDoc = None):
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1] , sentence)[:3]
             elif len(options) < 3:
-                # TODO generate more options
-                continue
+                if (ent2type[ent1] == "DATE"):
+                    try:
+                        options = datesDistract(ent1)
+                    except Exception  as ex:
+                        continue
+                else:
+                    continue
             random.shuffle(options)
             sample = {"Question": sentence.replace(ent1, "_________"),
                       "Answer": ent1,
@@ -333,9 +340,13 @@ def gen_sents(doc,limit=20,largeDoc = None):
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1] , sentence)[:3]
             elif len(options) < 3:
-                # TODO generate more options
-                # TODO If entity type is date, add synthetic date discriminators
-                continue
+                if(ent2type[ent1] == "DATE"):
+                    try:
+                        options = datesDistract(ent1)
+                    except Exception  as ex:
+                        continue
+                else:
+                    continue
             random.shuffle(options)
             sample = {"Question": sentence.replace(ent1, "_________"),
                       "Answer": ent1,
@@ -348,8 +359,14 @@ def gen_sents(doc,limit=20,largeDoc = None):
             if len(options) > 3:
                 options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2] , sentence)[:3]
             elif len(options) < 3:
-                # TODO generate more options
-                continue
+                if (ent2type[ent1] == "DATE"):
+                    try:
+                        options = datesDistract(ent1)
+                    except Exception  as ex:
+                        continue
+
+                else:
+                    continue
             random.shuffle(options)
             sample = {QUESTION: sentence.replace(ent2, "_________"),
                       ANSWER: ent2,
@@ -385,8 +402,8 @@ def capitalizeEverything(questionArray):
     for questionInfo in questionArray:
         questions.append({
             QUESTION: questionInfo[QUESTION],
-            ANSWER: questionInfo[ANSWER].upper(),
-            OPTIONS: [option.upper() for option in questionInfo[OPTIONS]],
+            ANSWER: manip.removeTrailingContent(questionInfo[ANSWER].upper()),
+            OPTIONS: [manip.removeTrailingContent(option.upper()) for option in questionInfo[OPTIONS]],
             ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
         })
 

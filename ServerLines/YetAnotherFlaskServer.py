@@ -204,7 +204,6 @@ def getListOfTopics():
         return jsonify(response.getResponse())
 
     except ServerError as ex:
-        #TODO Handle exception
         traceback.print_exc()
         raise ex
 
