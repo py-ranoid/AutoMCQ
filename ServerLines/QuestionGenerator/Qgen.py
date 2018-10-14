@@ -4,9 +4,12 @@ import random
 from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
+from spacy.symbols import ORTH
+from nltk.stem.porter import PorterStemmer
 from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model
 
 nlp = spacy.load('en_core_web_sm')
+stemmer = PorterStemmer()
 MIN_SENT_LEN = 8
 MAX_SENT_LEN = 25
 TEST_TEXT = """
@@ -215,7 +218,73 @@ def get_verb_qs(doc):
             "Options": options,
             "Type": "VERB"}
         questions.append(sample)
-    return questions
+
+
+def noun_picker(doc):
+    counts = doc.count_by(ORTH)
+    word_counter = {}
+    for word_id, count in sorted(counts.items(), reverse=True, key=lambda item: item[1]):
+        word = stemmer.stem(nlp(nlp.vocab.strings[word_id])[0].lemma_)
+        word_counter[word] = word_counter.get(word,0)+count
+
+    all_nouns = set()
+    sent2nouns = {}
+    noun_counts = {}
+    sent_mins ={}
+    for x in doc.noun_chunks:
+        if len(x.orth_) < 4 or len(x)>3:continue
+        start =x.start
+        for y in x:
+            if not y.is_stop and not y.lower_=='the':
+                start = y.i
+                break
+        noun = doc[start:x.end]
+        sent_id = str(x.sent.start)+"#"+str(x.sent.end)
+        all_nouns.add(noun.lower_)
+        if not noun.lower_ in noun_counts:
+            noun_counts[noun.lower_] = sum([word_counter[stemmer.stem(x.lemma_)] for x in noun])/len(noun)
+        if noun_counts[noun.lower_] < sent_mins.get(sent_id,50):
+            sent2nouns[sent_id] = set([noun.lower_])
+            sent_mins[sent_id] = noun_counts[noun.lower_]
+        elif noun_counts[noun.lower_] == sent_mins.get(sent_id,50):
+            sent2nouns[sent_id] = sent2nouns[sent_id].union(set([noun.lower_]))
+    return all_nouns, sent2nouns
+
+
+def get_noun_opts(all_nouns,target,sent):
+    target_words = word_tokenize(target.lower())
+    candidates = sorted(list(all_nouns),key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x)))[:6]
+    return [x for x in candidates if not x in sent][:2] + [target]
+
+
+def get_noun_sents(doc,skip_sent_ids=set()):
+    all_nouns, sent2nouns = noun_picker(doc)
+    all_sents = []
+    for sent_id in sent2nouns:
+        if sent_id in skip_sent_ids:
+            continue
+        sent = sentID2sent(sent_id,doc)[0]
+        targets = sent2nouns[sent_id]
+        if len(targets) ==1:
+            target = targets.pop()
+            try: options = get_w2v_options(target,nlp)[:3]
+            except: options = get_noun_opts(all_nouns,target,sent)
+        else:
+            target = random.sample(list(targets),1)[0]
+            options = get_noun_opts(all_nouns,target,sent)
+        if len(options) < 3:
+            continue
+        random.shuffle(options)
+        sample = {
+            "Question": sent.replace(target, "_________"),
+            "Answer": target,
+            "Options": options,
+            "Type": "NOUN"
+        }
+        if "_________" not in sample["Question"]:continue
+        all_sents.append(sample)
+    return all_sents,sent2nouns.keys()
+
 
 
 
