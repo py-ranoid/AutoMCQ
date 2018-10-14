@@ -72,23 +72,21 @@ def getQuestionsForKAurl():
     :return:
     """
     try:
+
         url = manip.removeSlashN(request.form['url'])
-        init_time = time.time()
+
+        print("getQuizfromKA Called: " + url)
+
         content = get_transcript_from_URL(url)
-        print ("KHA_time :", time.time() - init_time)
 
         user_info = request.form.get(USER_ID,DEFAULT_USER)
-        print (user_info)
-        uid = loads(manip.removeSlashN(user_info))
 
-        print('User id:' , uid)
-        resp = insert(uid, 'KA2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])
-        print (resp)
-        print ("INS_time :", time.time() - init_time)
+        resp = insertLog(QUIZ_FOR_KHAN, user_info, content)
+        init_time = time.time()
 
         questionArray = qgen.getQuestions(content)
 
-        print ("QUE_time :", time.time() - init_time)
+        outLog(init_time, resp)
 
         response = QuestionReponse()
         response.setQuestions(questionArray)
@@ -103,6 +101,17 @@ def getQuestionsForKAurl():
         traceback.print_exc()
         raise ServerError('New Error: ' + str(ex))
 
+def insertLog(quiz_info, user_info , allContent = ''):
+    uid = loads(manip.removeSlashN(user_info))
+    print('User id:', uid)
+    contentInfo = str(len(allContent)) + "::" + allContent[:20]
+    resp = insert(uid, quiz_info, "LENGTH" + "::" + contentInfo)
+    return resp
+
+def outLog(init_time , resp):
+    print (resp)
+    print ("Question Generation Time :", time.time() - init_time)
+
 @app.route('/getQuestionsForWikiTopic', methods=['POST'])
 def getQuestionsForWikiTopic():
     """
@@ -114,24 +123,21 @@ def getQuestionsForWikiTopic():
     :return: Questions Response Object
     """
     try:
+
         quiztopic = manip.removeSlashN(request.form[QUIZ_TOPIC])
         topicContent = literal_eval(request.form[CUSTOM_CONTENT])
 
-        user_info = request.form.get(USER_ID, DEFAULT_USER)
-        print (user_info)
-        uid = loads(manip.removeSlashN(user_info))
+        print("getQuestionsForWikiTopic Called: " + quiztopic)
 
+        user_info = request.form.get(USER_ID, DEFAULT_USER)
         allContent, quizContent = wiki.getQuizData(topicContent , quiztopic)
 
-        print('User id:', uid)
-        resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(allContent)) + "::" + allContent[:20])
+        resp = insertLog(QUIZ_FOR_WIKI_TOPIC , user_info , quizContent)
         init_time = time.time()
-        print (resp)
-        print ("INS_time :", time.time() - init_time)
 
         questionArray = qgen.getWikiQuestions(allContent , quizContent)
 
-        print ("QUE_time :", time.time() - init_time)
+        outLog(init_time , resp)
 
         response = QuestionReponse()
         response.setQuestions(questionArray)
@@ -154,20 +160,17 @@ def getQuestionsForText():
     """
     try:
         content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
-
         user_info = request.form.get(USER_ID,DEFAULT_USER)
-        print (user_info)
-        uid = loads(manip.removeSlashN(user_info))
 
-        print('User id:' , uid)
-        resp = insert(uid, 'TEXT2QUIZ', "LENGTH" + "::" + str(len(content)) + "::" + content[:20])
+        print("getQuestionsForText Called: " + content[:10])
+
+
+        resp = insertLog(QUIZ_FOR_TEXT, user_info, content)
         init_time = time.time()
-        print (resp)
-        print ("INS_time :", time.time() - init_time)
 
         questionArray = qgen.getQuestions(content)
 
-        print ("QUE_time :", time.time() - init_time)
+        outLog(init_time , resp)
 
         response = QuestionReponse()
         response.setQuestions(questionArray)
@@ -191,6 +194,8 @@ def getListOfTopics():
     """
     try:
         topic = manip.removeSlashN(request.form[TOPIC])
+        print("getListOfTopics Called " + topic)
+
         topics = wiki.getListOfValidTopics(topic)
 
         response = TopicsResponse()

@@ -7,11 +7,11 @@ from gensim.models import Word2Vec
 from spacy.symbols import ORTH
 from nltk.stem.porter import PorterStemmer
 from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model
+from QuestionGenerator.Distract import datesDistract
+from Constants import *
 
 nlp = spacy.load('en_core_web_sm')
 stemmer = PorterStemmer()
-MIN_SENT_LEN = 8
-MAX_SENT_LEN = 25
 TEST_TEXT = """
 The Battle of Plassey was a decisive victory of the British East India Company over the Nawab of Bengal and his French allies on 23 June 1757. The battle consolidated the Company's presence in Bengal, which later expanded to cover much of India over the next hundred years. The battle took place at Palashi (Anglicised version: Plassey) on the banks of the Hooghly River, about 150 kilometres (93 mi) north of Calcutta and south of Murshidabad, then capital of Bengal (now in Nadia district in West Bengal). The belligerents were the Nawab Sirajuddaulah, the last independent Nawab of Bengal, and the British East India Company. Siraj-ud-daulah had become the Nawab of Bengal the year before, and he ordered the English to stop the extension of their fortification. Robert Clive bribed Mir Jafar, the commander in chief of the Nawab's army, and also promised him to make him Nawab of Bengal. He defeated the Nawab at Plassey in 1757 and captured Calcutta. The battle was preceded by the attack on British-controlled Calcutta by Nawab Siraj-ud-daulah and the Black Hole massacre. The British sent reinforcements under Colonel Robert Clive and Admiral Charles Watson from Madras to Bengal and recaptured Calcutta. Clive then seized the initiative to capture the French fort of Chandernagar. Tensions and suspicions between Siraj-ud-daulah and the British culminated in the Battle of Plassey. The battle was waged during the Seven Years' War (1756–1763), and, in a mirror of their European rivalry, the French East India Company (La Compagnie des Indes Orientales) sent a small contingent to fight against the British. Siraj-ud-Daulah had a numerically superior force and made his stand at Plassey. The British, worried about being outnumbered, formed a conspiracy with Siraj-ud-Daulah's demoted army chief Mir Jafar, along with others such as Yar Lutuf Khan, Jagat Seths (Mahtab Chand and Swarup Chand), Omichund and Rai Durlabh. Mir Jafar, Rai Durlabh and Yar Lutuf Khan thus assembled their troops near the battlefield but made no move to actually join the battle. Siraj-ud-Daulah's army with 50,000 soldiers, 40 cannons and 10 war elephants was defeated by 3,000 soldiers of Col. Robert Clive, owing to the flight of Siraj-ud-daulah from the battlefield and the inactivity of the conspirators. The battle ended in 11 hours. This is judged to be one of the pivotal battles in the control of Indian subcontinent by the colonial powers. The British now wielded enormous influence over the Nawab and consequently acquired significant concessions for previous losses and revenue from trade. The British further used this revenue to increase their military might and push the other European colonial powers such as the Dutch and the French out of South Asia, thus expanding the British Empire.
 #""".strip()
@@ -86,7 +86,7 @@ def sentID2sent(sentID, doc):
     return doc[start:end].orth_.strip(), end - start
 
 
-def find_best_options(options, w2v_model, answer,ent_type):
+def find_best_options(options, w2v_model, answer,ent_type , sentence):
     """
     Choose the best 3 (2+target) options from the given options.
         :param options: list, All options
@@ -102,7 +102,10 @@ def find_best_options(options, w2v_model, answer,ent_type):
 
     distances = {}
     if ent_type == "DATE":
-        options = date_eliminator(answer,options)
+        try:
+            return datesDistract(answer)
+        except:
+            options = date_eliminator(answer,options)
         # TODO If reduced options are too few, add synthetic date discriminators
     for opt in options:
         # Eliminate options that have too many common ngrams
@@ -117,10 +120,17 @@ def find_best_options(options, w2v_model, answer,ent_type):
             # Assign very high distance if metric is high
             distances[opt] = 40
         else:
-            distances[opt] = w2v_model.wmdistance(word_tokenize(opt_low), source)
+            # print (answer,sentence,sentence.replace(answer , opt))
+            distances[opt] = w2v_model.wmdistance(word_tokenize(sentence.replace(answer , opt).lower()),word_tokenize(sentence.lower()))
+            # distances[opt] = w2v_model.wmdistance(word_tokenize(opt.lower()), word_tokenize(answer.lower()))
+
+        if len(opt_set.union(ans_set)) == len(opt_set):
+            # print(opt_set, ans_set)
+            distances[opt] *= 2
     # Assign distance to answer to 0 (closest to target)
     distances[answer] = 0
     options.sort(key=lambda x: distances[x])
+    # print (distances)
     return options
 
 
@@ -352,13 +362,17 @@ def gen_sents(doc,limit=20,largeDoc = None):
         :param limit=20: Upper Limit on number of questions to be returned
     """
     ents = get_entities(doc)
-    large_ents = get_entities(largeDoc)
     if largeDoc is None:
         w2v_model = gen_word2vec(doc)
+        large_type2ent = None
     else:
+        large_ents = get_entities(largeDoc)
         w2v_model = gen_word2vec(largeDoc)
-    ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
-    large_type2ent= map_ents_to_types_only(large_ents, largeDoc)
+        large_type2ent = map_ents_to_types_only(large_ents, largeDoc)
+
+    ent2type, large_type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
+
+
     result = []
     for sentID in sent2ent:
         # Iterating over all sentences that contain entities
@@ -374,7 +388,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
             options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
 
             if len(options) > 3:
-                options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
+                options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1] , sentence)[:3]
             elif len(options) < 3:
                 # TODO generate more options
                 continue
@@ -389,7 +403,7 @@ def gen_sents(doc,limit=20,largeDoc = None):
             # For Entity 1
             options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
             if len(options) > 3:
-                options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1])[:3]
+                options = find_best_options(list(options), w2v_model, ent1, ent2type[ent1] , sentence)[:3]
             elif len(options) < 3:
                 # TODO generate more options
                 # TODO If entity type is date, add synthetic date discriminators
@@ -404,15 +418,15 @@ def gen_sents(doc,limit=20,largeDoc = None):
             # For Entity 2
             options = [i for i in large_type2ent[ent2type[ent2]] if i not in sent2ent[sentID]] + [ent2]
             if len(options) > 3:
-                options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2])[:3]
+                options = find_best_options(list(options), w2v_model, ent2,ent2type[ent2] , sentence)[:3]
             elif len(options) < 3:
                 # TODO generate more options
                 continue
             random.shuffle(options)
-            sample = {"Question": sentence.replace(ent2, "_________"),
-                      "Answer": ent2,
-                      "Options": options,
-                      "Type": ent2type[ent2]}
+            sample = {QUESTION: sentence.replace(ent2, "_________"),
+                      ANSWER: ent2,
+                      OPTIONS: options,
+                      ANSWER_TYPE: ent2type[ent2]}
             result.append(sample)
     
     # Sort by entity type, choose top 20 and then shuffle.
@@ -438,9 +452,21 @@ def getWikiQuestions(allContent , quizContent):
 
     quizDoc = get_doc(quizContent)
     allDoc = get_doc(allContent)
-    questionsArray = gen_sents(quizDoc, largeDoc=allDoc)
+    questionsArray = capitalizeEverything(gen_sents(quizDoc, largeDoc=allDoc))
     return questionsArray
 
+
+def capitalizeEverything(questionArray):
+    questions = []
+    for questionInfo in questionArray:
+        questions.append({
+            QUESTION: questionInfo[QUESTION],
+            ANSWER: questionInfo[ANSWER].upper(),
+            OPTIONS: [option.upper() for option in questionInfo[OPTIONS]],
+            ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
+        })
+
+    return questions
 
 def getQuestions(content):
     """
@@ -448,5 +474,6 @@ def getQuestions(content):
         :param content: str, Text to generate questions from
     """    
     doc = get_doc(content)
-    questionArray = gen_sents(doc)
+    questionArray = capitalizeEverything(gen_sents(doc))
+
     return questionArray
