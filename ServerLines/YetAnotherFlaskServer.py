@@ -123,7 +123,7 @@ def getQuestionsForWikiTopic():
     :return: Questions Response Object
     """
     try:
-
+        init_time = time.time()
         quiztopic = manip.removeSlashN(request.form[QUIZ_TOPIC])
         topicContent = literal_eval(request.form[CUSTOM_CONTENT])
 
@@ -131,17 +131,16 @@ def getQuestionsForWikiTopic():
 
         user_info = request.form.get(USER_ID, DEFAULT_USER)
         allContent, quizContent = wiki.getQuizData(topicContent , quiztopic)
-
+        print ("PRC_time :", time.time() - init_time)
         resp = insertLog(QUIZ_FOR_WIKI_TOPIC , user_info , quizContent)
-        init_time = time.time()
-
+        print ("INS_time :", time.time() - init_time)
+        
         questionArray = qgen.getWikiQuestions(allContent , quizContent)
-
-        outLog(init_time , resp)
-
+        print ("QUE_time :", time.time() - init_time)
+        
         response = QuestionReponse()
         response.setQuestions(questionArray)
-
+        print ("RET_time :", time.time() - init_time)
         return jsonify(response.getResponse())
 
     except ServerError as ex:
