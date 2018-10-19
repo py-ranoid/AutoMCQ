@@ -321,7 +321,7 @@ def noun_picker(doc):
 
 def get_noun_opts(all_nouns,target,sent):
     target_words = word_tokenize(target.lower())
-    candidates = sorted(list(all_nouns),key=lambda x:w2v_model.similarity(target_words,word_tokenize(x))*get_mul_optdoc(x.lower,sent))[:2]
+    candidates = sorted(list(all_nouns),key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x))*(1/get_mul_optdoc(x.lower,sent)))[:2]
     return candidates + [target]
 
 
@@ -466,19 +466,22 @@ def gen_sents(doc,limit=15,largeDoc = None):
     # Sort by entity type, choose top 20 and then shuffle.
     verb_sents = set()
     verb_qs = set()
-
+    print ("---QUESTION COUNT---")
+    print ("E   :",len(result))
+    if len(result)<limit:
+        verb_qs,verb_sents = get_verb_qs(doc)
+        result += random.sample(verb_qs, min(limit - len(result), len(verb_qs)))
+    
+    print ("EV  :",len(result))
     if len(result) < limit:
         noun_qs,_ = get_noun_sents(doc,verb_sents)
         result += random.sample(noun_qs , min(limit - len(result) , len(noun_qs)))
 
-    if len(result)<limit:
-        verb_qs,verb_sents = get_verb_qs(doc)
-        result += random.sample(verb_qs, min(limit - len(result), len(verb_qs)))
+    print ("ENV :",len(result))
 
 
     result.sort(key=lambda x:ENTITY_PRIORITIES[x[ANSWER_TYPE]] , reverse=True)
 
-    print("Number of questions generated (N,O): "  , len(verb_qs) , len(result) - len(verb_qs))
     result = result[:limit*3]
     result = random.sample(result , min(limit , len(result)))
 
