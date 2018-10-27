@@ -35,9 +35,12 @@ def getListOfValidTopics(topic):
     :return: List of topics
     """
     try:
-        content = wikipedia.search(topic)
-        # topics = [topic]
-        return content[:5]
+        topics = wikipedia.search(topic)
+        for t in topics:
+            if t.lower() == topic.lower():
+                topics.remove(t)
+                break
+        return topics
     except wikipedia.exceptions.DisambiguationError as ex:
         return ex.options
     except wikipedia.exceptions.PageError as ex:
@@ -60,7 +63,8 @@ def getPageContentForFirstTopic(topic):
 
 def getQuizData(tree , subtopic):
     paragraph = ''
-    quizContent = ''
+    quizContent = None
+
     for container in tree:
         paragraph += container[TOPIC_CONTENT]
         paragraph += ' '
@@ -69,6 +73,8 @@ def getQuizData(tree , subtopic):
 
     # paragraph.replace('.. ' , '.')
 
+    if quizContent == None:
+        raise ServerError('Subtopic not found in list of subtopics of content.')
     return paragraph , quizContent
 
 def getTreeFromContent(content , topic):

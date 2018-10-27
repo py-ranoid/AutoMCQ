@@ -5,10 +5,13 @@ from Constants import *
 
 TIME_ENTITIES = ["Year", "Month", "Day", "Week", "Decade", "Millenium"]
 
+YEAR_CONSTANT = 'YEAR'
+DATE_CONSTANT = 'DATE'
+MONTH_CONSTANT = 'MONTH'
+
 def removeTrailingSpace(content):
     content = content[:-1] if content[-1] == ' ' else content
     return content
-
 
 def datesDistract(date):
 
@@ -17,6 +20,7 @@ def datesDistract(date):
 
         YEAR_REGEX = r'[12][0-9]{3}'
         DATE_REGEX = r'[12]?[0-9]|3[01]'
+
         short_months = [x[:3] for x in MONTH_LIST]
         MONTH_REGEX = r'(' + "|".join(MONTH_LIST) + "|" + ("|".join(MONTH_LIST)).lower() + "|" + "|".join(
             short_months) + "|" + ("|".join(short_months)).lower() + ')'
@@ -43,8 +47,9 @@ def datesDistract(date):
         option2 = ''
         if(dateFlag):
             finalString += dateValue[0] + ' '
-
-            random1, random2 = sample(range(1 , 29) , 2)
+            random1 , random2 = -1 , -1
+            while random1 != random2:
+                random1, random2 = sample(range(1 , 29) , 2)
 
             option1 += str(random1) + ' '
             option2 += str(random2)+ ' '
@@ -55,7 +60,7 @@ def datesDistract(date):
             actual = monthValue[0]
             random1, random2 = actual, actual
 
-            while random1 == random2 or random1 == actual or random2 == acutal:
+            while random1 == random2 or random1 == actual or random2 == actual:
                 random1 , random2 = sample(range(0, 12), 2)
 
             option1 += str(MONTH_LIST[random1]) + ' '

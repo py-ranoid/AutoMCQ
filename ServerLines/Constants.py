@@ -22,6 +22,10 @@ QUESTION = 'Question'
 ANSWER = 'Answer'
 OPTIONS = 'Options'
 ANSWER_TYPE = 'Type'
+QUESTION_RANK = 'Rank'
+Q_TYPE_ENT = 'E_'
+Q_TYPE_VERB = 'V_'
+Q_TYPE_NOUN = 'N_'
 
 NO_QUESTIONS = 'No Questions Were Generated'
 
