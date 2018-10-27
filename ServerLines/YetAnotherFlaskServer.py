@@ -163,7 +163,7 @@ def getQuestionsForText():
         user_info = request.form.get(USER_ID,DEFAULT_USER)
 
         print("getQuestionsForText Called: " + content[:10])
-
+        print("Content : " + content)
 
         resp = insertLog(QUIZ_FOR_TEXT, user_info, content)
         init_time = time.time()

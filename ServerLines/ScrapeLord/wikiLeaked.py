@@ -37,7 +37,7 @@ def getListOfValidTopics(topic):
     try:
         content = wikipedia.search(topic)
         # topics = [topic]
-        return content
+        return content[:5]
     except wikipedia.exceptions.DisambiguationError as ex:
         return ex.options
     except wikipedia.exceptions.PageError as ex:

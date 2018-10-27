@@ -55,7 +55,7 @@ def datesDistract(date):
             actual = monthValue[0]
             random1, random2 = actual, actual
 
-            while random1 == random2:
+            while random1 == random2 or random1 == actual or random2 == acutal:
                 random1 , random2 = sample(range(0, 12), 2)
 
             option1 += str(MONTH_LIST[random1]) + ' '

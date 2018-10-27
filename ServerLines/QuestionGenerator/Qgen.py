@@ -386,7 +386,8 @@ def gen_sents(doc,limit=15,largeDoc = None):
         large_type2ent = map_ents_to_types_only(large_ents, largeDoc)
 
     ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
-
+    if large_type2ent == None:
+        large_type2ent =type2ent
 
     result = []
     for sentID in sent2ent:
@@ -401,6 +402,8 @@ def gen_sents(doc,limit=15,largeDoc = None):
         if ent1 == ent2:
             # Options : All entities of the same type as target but not present in question
             # Also add target to options
+            print('Entity: ', ent1)
+            print('Sentence: ', sentence)
             options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent1]
 
             if len(options) > 3:
