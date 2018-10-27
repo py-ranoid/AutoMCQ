@@ -246,7 +246,6 @@ def get_w2v_sim(a,b):
     except KeyError:return 999
 
 def get_mul_optdoc(option,sent):
-    print( "ggwp: ",option , sent)
     if option in sent:
         return 0.1 
     else:
@@ -273,7 +272,6 @@ def get_verb_qs(doc , skip_sent_ids = set()):
             - The best options may be too similar to the word and may need stem-based elimination.
                 PorterStemmer takes around 20ms whereas spacy's lemmatization takes ~110ms.
         """
-        print("vvv",all_verbs,"vvv")
         options = sorted(all_verbs, key=lambda x:get_w2v_sim(ans.lower(),x) * get_mul_optdoc(x, sent_low),reverse=True)[:2]
         options += [ans.lower()]
         if len(options) <3:
@@ -354,7 +352,6 @@ def get_noun_sents(doc,skip_sent_ids=set()):
             target = random.sample(list(targets),1)[0]
             options = get_noun_opts(all_nouns,target,sent.lower())
 
-        print('ooo' , options , target)
 
         finalOptions = options
         for opt in finalOptions:
@@ -365,7 +362,6 @@ def get_noun_sents(doc,skip_sent_ids=set()):
         options = options[:2]
         options += [target]
 
-        print('vvv' , options , target)
 
         if len(options) < 3:
             continue

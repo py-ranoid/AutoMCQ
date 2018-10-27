@@ -55,9 +55,14 @@ def getPageContentForFirstTopic(topic):
     :return: content of the wikipedia page
     """
     try:
-        topics = getListOfValidTopics(topic)
-        content = wikipedia.WikipediaPage(title = topics[0])
+        content = wikipedia.WikipediaPage(title = topic)
         return topic , manip.removeSlashN(content.content)
+    except wikipedia.exceptions.DisambiguationError as ex:
+        return ex.options
+    except wikipedia.exceptions.PageError as ex:
+        raise ServerError(NO_TOPICS)
+    except Exception as ex:
+        raise ServerError('New Error: ' + str(ex))
     except ServerError as ex:
         raise ex
 

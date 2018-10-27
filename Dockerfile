@@ -5,6 +5,7 @@ FROM base as builder
 RUN mkdir /install
 WORKDIR /install
 COPY ./requirements.txt /requirements.txt
+ENV ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future
 RUN pip install --install-option="--prefix=/install" -r /requirements.txt \
     && python3 -m nltk.downloader 'punkt' \
     && python3 -m spacy download en

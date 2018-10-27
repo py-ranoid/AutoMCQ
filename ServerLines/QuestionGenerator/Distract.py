@@ -48,7 +48,7 @@ def datesDistract(date):
         if(dateFlag):
             finalString += dateValue[0] + ' '
             random1 , random2 = -1 , -1
-            while random1 != random2:
+            while random1 == random2:
                 random1, random2 = sample(range(1 , 29) , 2)
 
             option1 += str(random1) + ' '
