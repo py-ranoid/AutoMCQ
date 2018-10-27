@@ -543,12 +543,12 @@ def capitalizeEverything(questionArray):
             questions.append({
                 QUESTION: questionInfo[QUESTION],
                 QUESTION_RANK: questionInfo[QUESTION_RANK],
-                ANSWER: questionInfo[OPTIONS].index(questionInfo[ANSWER]),
+                ANSWER: questionInfo[ANSWER].upper(),
                 OPTIONS: [manip.removeTrailingContent(option.upper()) for option in questionInfo[OPTIONS]],
                 ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
             })
 
-        return questions
+        return transformAnswerToIndex(questions)
     except:
         print(questionArray)
         raise Exception("Index problem")
