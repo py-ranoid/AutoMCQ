@@ -165,36 +165,40 @@ def rangeYearDistract(answer):
     YEAR_0 = YEAR_CONSTANT + ZERO
     YEAR_1 = YEAR_CONSTANT + ONE
 
-    yearValue = re.findall(S_YEAR_REGEX, date)
+    yearValue = re.findall(YEAR_REGEX, date)
 
     year0 = int(yearValue[0])
     year1 = int(yearValue[1])
 
-    date = re.sub(YEAR_REGEX, YEAR_0, date)
-    date = re.sub(YEAR_REGEX, YEAR_1, date)
+    date = re.sub(YEAR_REGEX, YEAR_0, date , count= 1)
+    date = re.sub(YEAR_REGEX, YEAR_1, date , count= 1)
 
     opt11, opt12 = -1, -1
     opt21, opt22 = -1, -1
 
-    while opt11 < opt12 and opt21 < opt22 and (opt11 != opt12 or opt21 != opt22):
+
+    while opt11+opt21 >= opt12+opt22:
 
         while opt11 == opt12:
-            opt11 , opt12 = -1 * sample(range(0 , 4) , 2) if randint(0, 4) < 2 else sample(range(0 , 4) , 2)
+            opt11 = -1 * randint(1, 4) if randint(0, 4) < 2 else randint(1, 4)
+            opt12 = -1 * randint(1, 4) if randint(0, 4) < 2 else randint(1, 4)
 
         opt11 += year0
         opt12 += year1
 
         while opt21 == opt22:
-            opt21, opt22 = -1 * sample(range(0, 4), 2) if randint(0, 4) < 2 else sample(range(0, 4), 2)
+            opt21 = -1 * randint(1, 4) if randint(0, 4) < 2 else randint(1, 4)
+            opt22 = -1 * randint(1, 4) if randint(0, 4) < 2 else randint(1, 4)
 
         opt21 += year0
         opt22 += year1
 
+
     option1 , option2 = date , date
-    option1 = option1.replace(YEAR_0 , opt11)
-    option1 = option1.replace(YEAR_1 , opt12)
-    option2 = option2.replace(YEAR_0 , opt21)
-    option2 = option2.replace(YEAR_1 , opt22)
+    option1 = option1.replace(YEAR_0 , str(opt11))
+    option1 = option1.replace(YEAR_1 , str(opt12))
+    option2 = option2.replace(YEAR_0 , str(opt21))
+    option2 = option2.replace(YEAR_1 , str(opt22))
 
     return [removeTrailingSpace(answer), removeTrailingSpace(option1), removeTrailingSpace(option2)]
 
@@ -344,6 +348,3 @@ def datesDistract2(date):
 
     except Exception as ex:
         raise ex
-
-
-print (datesDistract('in the 1900s'))
