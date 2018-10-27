@@ -3,6 +3,7 @@ from random import sample , randint
 import re
 from Constants import *
 from YetAnotherException import ServerError
+import traceback
 TIME_ENTITIES = ["Year", "Month", "Day", "Week", "Decade", "Millenium"]
 
 YEAR_CONSTANT = 'YEAR'
@@ -31,7 +32,7 @@ def normalDateDistract(answer):
 
         date = answer
 
-        yearValue = re.findall(S_YEAR_REGEX, date)
+        yearValue = re.findall(YEAR_REGEX, date)
 
         parsedDate = parse(date)
 
@@ -57,41 +58,46 @@ def normalDateDistract(answer):
         option1 = date
         option2 = date
 
+        print(date)
+
         if (dateFlag):
             random1, random2 = -1, -1
             while random1 == random2:
                 random1, random2 = sample(range(1, 29), 2)
 
-            option1 = option1.replace(DATE_CONSTANT, random1)
-            option2 = option2.replace(DATE_CONSTANT, random2)
+            option1 = option1.replace(DATE_CONSTANT, str(random1))
+            option2 = option2.replace(DATE_CONSTANT, str(random2))
 
         if (monthFlag):
-            actual = parsedDate.month
+            actual = int(parsedDate.month)
             random1, random2 = actual, actual
 
             while random1 == random2 or random1 == actual or random2 == actual:
                 random1, random2 = sample(range(0, 12), 2)
 
-            option1 = option1.replace(MONTH_CONSTANT, random1)
-            option2 = option2.replace(MONTH_CONSTANT, random2)
+            option1 = option1.replace(MONTH_CONSTANT, MONTH_LIST[random1])
+            option2 = option2.replace(MONTH_CONSTANT, MONTH_LIST[random2])
 
         if (yearFlag):
             lowerMonth = 1
             upperMonth = 4
-            actual = parsedDate.year
+            actual = int(parsedDate.year)
             if (monthFlag):
                 random1 = randint(0, 1)
                 random2 = -1 * randint(0, 1)
-                option1 = option1.replace(YEAR_CONSTANT, random1)
-                option2 = option2.replace(YEAR_CONSTANT, random2)
+                option1 = option1.replace(YEAR_CONSTANT, str(random1 + actual))
+                option2 = option2.replace(YEAR_CONSTANT, str(random2 + actual))
+
 
             else:
 
                 random1, random2 = randint(lowerMonth, upperMonth), randint(lowerMonth, upperMonth)
-                op = -1 * random1 if randint(0, 4) < 2 else random1
-                option1 = option1.replace(YEAR_CONSTANT, actual+op)
-                op = -1 * random2 if randint(0, 4) < 2 else random2
-                option2 = option2.replace(YEAR_CONSTANT, actual+op)
+                op = -1 * random1 if randint(0, 4) < 3 else random1
+                option1 = option1.replace(YEAR_CONSTANT, str(actual+op))
+                op = -1 * random2 if randint(0, 4) < 3 else random2
+                option2 = option2.replace(YEAR_CONSTANT, str(actual+op))
+
+                print(option1  ,option2)
 
         return [removeTrailingSpace(answer), removeTrailingSpace(option1), removeTrailingSpace(option2)]
 
@@ -105,7 +111,7 @@ def specialYearsDistract(answer):
     yearFlag = True if len(yearValue) > 0 else False
 
     centValue = re.findall(TH_YEAR_REGEX, date)
-    centFlag = True if len(yearValue) > 0 else False
+    centFlag = True if len(centValue) > 0 else False
 
     if (yearFlag):
         date = re.sub(YEAR_REGEX, YEAR_CONSTANT , date)
@@ -129,7 +135,7 @@ def specialYearsDistract(answer):
 
 
     elif(centFlag):
-        date = re.sub(TH_YEAR_REGEX, CENT_CONSTANT, date)
+        date = re.sub(DATE_REGEX, CENT_CONSTANT, date)
 
         actual = int(centValue[0])
         option1 = date
@@ -209,6 +215,7 @@ def datesDistract(answer):
             options = specialYearsDistract(date)
             return options
         except Exception as ex:
+            traceback.print_exc()
             raise ServerError(NEW_ERROR + str(ex))
 
     elif (len(yearValue) == 2):
@@ -337,3 +344,6 @@ def datesDistract2(date):
 
     except Exception as ex:
         raise ex
+
+
+print (datesDistract('in the 1900s'))
