@@ -4,7 +4,7 @@ import ScrapeLord.wikiLeaked as wiki
 import QuestionGenerator.Qgen as qgen
 from DBops.crud import insert,insert_rev
 from json import loads
-import traceback
+import sys, traceback
 import time
 from YetAnotherException import ServerError
 from ResponsePojos.ContentResponse import ContentResponse
@@ -160,6 +160,8 @@ def getQuestionsForText():
     try:
         content = manip.removeSlashN(request.form[CUSTOM_CONTENT])
         user_info = request.form.get(USER_ID,DEFAULT_USER)
+
+        print(content)
 
         print("getQuestionsForText Called: " + content[:10])
         print("Content : " + content)

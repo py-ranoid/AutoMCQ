@@ -166,7 +166,15 @@ def get_w2v_options(source_word,nlp,check_lemma=True):
         if source_word.lower() not in word.lower():
             if check_lemma:
                 if not nlp(manip.stringifyContent(word))[0].lemma_ == word_lemma:
-                    opts.append(word.replace('_',' '))
+                    newWord = word.replace('_',' ')
+                    if newWord == source_word:
+                        continue
+                    else:
+                        opts.append(newWord)
             else:
-                opts.append(word.replace('_',' '))
+                newWord = word.replace('_', ' ')
+                if newWord == source_word:
+                    continue
+                else:
+                    opts.append(newWord)
     return opts

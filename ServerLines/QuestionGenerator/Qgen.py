@@ -245,19 +245,25 @@ def get_w2v_sim(a,b):
     try:return w2v_model.similarity(a, b)
     except KeyError:return 999
 
-def get_mul_optdoc(opt,sent):
-    if opt in sent:
+def get_mul_optdoc(option,sent):
+    print( "ggwp: ",option , sent)
+    if option in sent:
         return 0.1 
     else:
         return 1
     
-def get_verb_qs(doc):
+def get_verb_qs(doc , skip_sent_ids = set()):
     sent_verbs, all_verbs = verb_picker(doc)
     questions = []
     for s in sent_verbs:
+
+        if s in skip_sent_ids:
+            continue
+
         sent = sentID2sent(s,doc)[0]
         sent_low = sent.lower()
         ans=sent_verbs[s].pop()
+
         """
         This currently only picks the best options from the document (~220 µs) which is fast and makes grammatical sense,
         but may not be very efficient. I see two alternatives
@@ -267,7 +273,8 @@ def get_verb_qs(doc):
             - The best options may be too similar to the word and may need stem-based elimination.
                 PorterStemmer takes around 20ms whereas spacy's lemmatization takes ~110ms.
         """
-        options = sorted(all_verbs, key=lambda x:get_w2v_sim(ans.lower(),x) * get_mul_optdoc(x,sent_low),reverse=True)[:2]
+        print("vvv",all_verbs,"vvv")
+        options = sorted(all_verbs, key=lambda x:get_w2v_sim(ans.lower(),x) * get_mul_optdoc(x, sent_low),reverse=True)[:2]
         options += [ans.lower()]
         if len(options) <3:
             continue
@@ -281,7 +288,7 @@ def get_verb_qs(doc):
         }
         if "_________" not in sample[QUESTION]:continue
         questions.append(sample)
-    return questions,sent_verbs.keys()
+    return questions,set(sent_verbs.keys())
 
 
 def noun_picker(doc):
@@ -323,8 +330,10 @@ def noun_picker(doc):
 
 def get_noun_opts(all_nouns,target,sent):
     target_words = word_tokenize(target.lower())
-    candidates = sorted(list(all_nouns),key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x))*(1/get_mul_optdoc(x.lower,sent)))[:2]
-    return candidates + [target]
+    candidates = sorted(list(all_nouns),key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x))*(1/get_mul_optdoc(x.lower(),sent)))[:2]
+    while target in candidates:
+        candidates.remove(target)
+    return candidates
 
 
 def get_noun_sents(doc,skip_sent_ids=set()):
@@ -338,14 +347,29 @@ def get_noun_sents(doc,skip_sent_ids=set()):
         if len(targets) == 1:
             target = targets.pop()
             try:
-                options = get_w2v_options(target,nlp)[:3]
+                options = get_w2v_options(target,nlp)
             except:
                 options = get_noun_opts(all_nouns,target,sent.lower())
         else:
             target = random.sample(list(targets),1)[0]
             options = get_noun_opts(all_nouns,target,sent.lower())
+
+        print('ooo' , options , target)
+
+        finalOptions = options
+        for opt in finalOptions:
+            if opt.lower() == target.lower():
+                options.remove(opt)
+
+
+        options = options[:2]
+        options += [target]
+
+        print('vvv' , options , target)
+
         if len(options) < 3:
             continue
+
         random.shuffle(options)
         sample = {
             QUESTION: sent.replace(target, "_________"),
@@ -431,8 +455,11 @@ def gen_sents(doc,limit=15,largeDoc = None):
 
     ent2type, type2ent, counter, sent2ent = map_ents_to_types(ents, doc)
 
+    if largeDoc is None:
+        large_type2ent = type2ent
 
     result = []
+    ent_sents = set()
     for sentID in sent2ent:
         # Iterating over all sentences that contain entities
         ent1 = choose_ent(sent2ent[sentID], counter, ent2type)
@@ -475,12 +502,12 @@ def gen_sents(doc,limit=15,largeDoc = None):
     print ("---QUESTION COUNT---")
     print ("E   :",len(result))
     if len(result)<limit:
-        verb_qs,verb_sents = get_verb_qs(doc)
+        verb_qs,verb_sents = get_verb_qs(doc , ent_sents)
         result += random.sample(verb_qs, min(limit - len(result), len(verb_qs)))
     
     print ("EV  :",len(result))
     if len(result) < limit:
-        noun_qs,_ = get_noun_sents(doc,verb_sents)
+        noun_qs,_ = get_noun_sents(doc,verb_sents.union(ent_sents))
         result += random.sample(noun_qs , min(limit - len(result) , len(noun_qs)))
 
     print ("ENV :",len(result))
@@ -515,16 +542,20 @@ def transformAnswerToIndex(questions):
 
 def capitalizeEverything(questionArray):
     questions = []
-    for questionInfo in questionArray:
-        questions.append({
-            QUESTION: questionInfo[QUESTION],
-            QUESTION_RANK: questionInfo[QUESTION_RANK],
-            ANSWER: questionInfo[OPTIONS].index(questionInfo[ANSWER]),
-            OPTIONS: [manip.removeTrailingContent(option.upper()) for option in questionInfo[OPTIONS]],
-            ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
-        })
+    try:
+        for questionInfo in questionArray:
+            questions.append({
+                QUESTION: questionInfo[QUESTION],
+                QUESTION_RANK: questionInfo[QUESTION_RANK],
+                ANSWER: questionInfo[OPTIONS].index(questionInfo[ANSWER]),
+                OPTIONS: [manip.removeTrailingContent(option.upper()) for option in questionInfo[OPTIONS]],
+                ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
+            })
 
-    return questions
+        return questions
+    except:
+        print(questionArray)
+        raise Exception("Index problem")
 
 def getQuestions(content):
     """
