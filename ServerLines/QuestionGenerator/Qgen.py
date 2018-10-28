@@ -2,6 +2,7 @@
 import spacy
 import random
 import time
+import re
 from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
