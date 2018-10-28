@@ -262,6 +262,11 @@ def get_mul_optdoc(option,sent):
     
 def get_verb_qs(doc , skip_sent_ids = set()):
     sent_verbs, all_verbs = verb_picker(doc)
+
+    for x in all_verbs:
+        if len(x) <= 3:
+            all_verbs.remove(x)
+
     questions = []
     for s in sent_verbs:
 
@@ -337,7 +342,11 @@ def noun_picker(doc):
 
 def get_noun_opts(all_nouns,target,sent):
     target_words = word_tokenize(target.lower())
-    candidates = sorted(list(all_nouns),key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x))*(1/get_mul_optdoc(x.lower(),sent)))[:2]
+    noun_words = list(all_nouns)
+    for x in noun_words:
+        if(len(x) <= 3):
+            noun_words.remove(x)
+    candidates = sorted(noun_words,key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x))*(1/get_mul_optdoc(x.lower(),sent)))[:2]
     while target in candidates:
         candidates.remove(target)
     return candidates
@@ -555,27 +564,34 @@ def getWikiQuestions(allContent , quizContent):
 
 
 def transformAnswerToIndex(questions):
-    for i in range(len(questions)):
-        questions[i][ANSWER] = questions[i][OPTIONS].index(questions[i][ANSWER])
-
+    print(questions)
+    questions[ANSWER] = questions[OPTIONS].index(questions[ANSWER])
     return questions
 
 def capitalizeEverything(questionArray):
     questions = []
-    try:
-        for questionInfo in questionArray:
-            questions.append({
+    for questionInfo in questionArray:
+        try:
+            q = {
                 QUESTION: questionInfo[QUESTION],
                 QUESTION_RANK: questionInfo[QUESTION_RANK],
                 ANSWER: questionInfo[ANSWER].upper(),
                 OPTIONS: [manip.removeTrailingContent(option.upper()) for option in questionInfo[OPTIONS]],
                 ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
-            })
+            }
+            print('qqq' , q)
+            q[ANSWER] = q[OPTIONS].index(q[ANSWER])
 
-        return transformAnswerToIndex(questions)
-    except:
-        print(questions)
-        raise Exception("Index problem")
+
+            questions.append(q)
+        except IndexError as ex:
+            print(questionInfo)
+            pass
+        except:
+            print(questionInfo)
+            pass
+
+    return questions
 
 def getQuestions(content):
     """
