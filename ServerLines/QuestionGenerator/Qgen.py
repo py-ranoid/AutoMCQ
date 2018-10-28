@@ -2,6 +2,7 @@
 import spacy
 import random
 import time
+import re
 from nltk import word_tokenize,sent_tokenize
 # from nltk.util import ngrams
 from gensim.models import Word2Vec
@@ -22,6 +23,7 @@ The Battle of Plassey was a decisive victory of the British East India Company o
 def timecop(tag,start):
     print (tag.upper()[:3]+"_TIME:",time.time()-start)
 
+BLANQ = "__________"
 ENTITY_PRIORITIES = {
     "PERSON": 20,
     "NORP": 10,
@@ -285,7 +287,7 @@ def get_verb_qs(doc , skip_sent_ids = set()):
             continue
         random.shuffle(options)
         sample = {
-            QUESTION: sent.replace(ans, "_________"),
+            QUESTION: blanq_sent(sent,ans),
             ANSWER: ans,
             OPTIONS: options,
             ANSWER_TYPE: "VERB",
@@ -375,7 +377,7 @@ def get_noun_sents(doc,skip_sent_ids=set()):
 
         random.shuffle(options)
         sample = {
-            QUESTION: sent.replace(target, "_________"),
+            QUESTION: blanq_sent(sent,target),
             ANSWER: target,
             OPTIONS: options,
             ANSWER_TYPE: "NOUN",
@@ -440,6 +442,12 @@ def print_results(sents):
         print()
     print(len(sents))
 
+def blanq_sent(sentence,target):
+    blanked = re.sub(r"\b"+target+r"\b",BLANQ,sentence)
+    if BLANQ in blanked:
+        return blanked    
+    else:
+        return sentence.replace(target,BLANQ)
 
 def gen_sents(doc,limit=15,largeDoc = None):
     """
@@ -499,7 +507,7 @@ def gen_sents(doc,limit=15,largeDoc = None):
             timecop("ochoose",start)
             random.shuffle(options)
             sample = {
-                QUESTION: sentence.replace(ent, "_________"),
+                QUESTION: blanq_sent(sentence,ent),
                 ANSWER: ent,
                 OPTIONS: options,
                 ANSWER_TYPE: ent2type[ent],
