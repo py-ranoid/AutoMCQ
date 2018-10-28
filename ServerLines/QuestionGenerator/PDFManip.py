@@ -1,21 +1,21 @@
 import PyPDF2
 import re
 import sys
-from fastrand import pcg32bounded
+# from fastrand import pcg32bounded
 from unidecode import unidecode
 DEFAULT_FILE = 'temp.pdf'
-
-def randint(lower , upper):
-    randNum = pcg32bounded(upper - lower) + lower
-    return randNum
-
-def sample(lower , upper , numSamples):
-    randNums = set()
-    while len(randNums) < numSamples:
-        randNum = randint(lower , upper)
-        if randNum not in randNums:
-            randNums.add(randNum)
-    return randNums
+#
+# def randint(lower , upper):
+#     randNum = pcg32bounded(upper - lower) + lower
+#     return randNum
+#
+# def sample(lower , upper , numSamples):
+#     randNums = set()
+#     while len(randNums) < numSamples:
+#         randNum = randint(lower , upper)
+#         if randNum not in randNums:
+#             randNums.add(randNum)
+#     return randNums
 
 def removeNonAsciiCharacters(content):
     content = unidecode(content)

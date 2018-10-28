@@ -1,5 +1,5 @@
 from dateutil.parser import parse
-from QuestionGenerator.PDFManip import sample , randint
+from random import sample , randint
 import re
 from Constants import *
 from YetAnotherException import ServerError
@@ -83,8 +83,8 @@ def normalDateDistract(answer):
         if (dateFlag):
             random1, random2 = -1, -1
             while random1 == random2:
-                # random1, random2 = sample(range(1, 29), 2)
-                random1, random2 = sample(1, 29, 2)
+                random1, random2 = sample(range(1, 29), 2)
+                # random1, random2 = sample(1, 29, 2)
 
             option1 = option1.replace(DATE_CONSTANT, str(random1))
             option2 = option2.replace(DATE_CONSTANT, str(random2))
@@ -94,7 +94,8 @@ def normalDateDistract(answer):
             random1, random2 = actual, actual
 
             while random1 == random2 or random1 == actual or random2 == actual:
-                random1, random2 = sample(0, 12, 2)
+                random1, random2 = sample(range(0, 12), 2)
+                # random1, random2 = sample(0, 12, 2)
 
             option1 = option1.replace(MONTH_CONSTANT, MONTH_LIST[random1])
             option2 = option2.replace(MONTH_CONSTANT, MONTH_LIST[random2])
@@ -273,8 +274,8 @@ def datesDistract2(date):
             finalString += dateValue[0] + ' '
             random1 , random2 = -1 , -1
             while random1 == random2:
-                # random1, random2 = sample(range(1 , 29) , 2)
-                random1, random2 = sample(1 , 29 , 2)
+                random1, random2 = sample(range(1 , 29) , 2)
+                # random1, random2 = sample(1 , 29 , 2)
 
             option1 += str(random1) + ' '
             option2 += str(random2)+ ' '
@@ -286,8 +287,8 @@ def datesDistract2(date):
             random1, random2 = actual, actual
 
             while random1 == random2 or random1 == actual or random2 == actual:
-                # random1 , random2 = sample(range(0, 12), 2)
-                random1 , random2 = sample(0, 12, 2)
+                random1 , random2 = sample(range(0, 12), 2)
+                # random1 , random2 = sample(0, 12, 2)
 
 
             option1 += str(MONTH_LIST[random1]) + ' '
