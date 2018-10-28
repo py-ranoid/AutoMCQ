@@ -10,7 +10,6 @@ from nltk.stem.porter import PorterStemmer
 from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model,get_w2v_options
 from QuestionGenerator.Distract import datesDistract
 from Constants import *
-
 from QuestionGenerator import PDFManip as manip
 
 try : nlp = spacy.load('en_core_web_sm')
@@ -567,7 +566,7 @@ def capitalizeEverything(questionArray):
 
         return transformAnswerToIndex(questions)
     except:
-        print(questionArray)
+        print(questions)
         raise Exception("Index problem")
 
 def getQuestions(content):
