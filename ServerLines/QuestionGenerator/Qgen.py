@@ -467,6 +467,7 @@ def gen_sents(doc,limit=15,largeDoc = None):
     for sentID in sent2ent:
         # Iterating over all sentences that contain entities
         ent1 = choose_ent(sent2ent[sentID], counter, ent2type)
+        timecop("echoose",start)
         # ent2 = choose_ent(sent2ent[sentID], counter, ent2type, True)
         ent2 = ent1
         sentence, sent_len = sentID2sent(sentID, doc)
@@ -478,10 +479,12 @@ def gen_sents(doc,limit=15,largeDoc = None):
             # Options : All entities of the same type as target but not present in question
             # Also add target to options
             options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent]
-
+            timecop("oALL",start)
             if len(options) > 3:
+                print ("MORE")
                 options = find_best_options(list(options), w2v_model, ent, ent2type[ent] , sentence)[:3]
             elif len(options) < 3:
+                print ("FEW")
                 if (ent2type[ent] == ENT_DATE):
                     try:
                         options = datesDistract(ent)
@@ -489,6 +492,7 @@ def gen_sents(doc,limit=15,largeDoc = None):
                         continue
                 else:
                     continue
+            timecop("ochoose",start)
             random.shuffle(options)
             sample = {
                 QUESTION: sentence.replace(ent, "_________"),
