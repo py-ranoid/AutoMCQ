@@ -486,7 +486,7 @@ def gen_sents(doc,limit=15,largeDoc = None):
             options = [i for i in large_type2ent[ent2type[ent1]] if i not in sent2ent[sentID]] + [ent]
             timecop("oALL",start)
             if len(options) > 3:
-                print ("MORE")
+                print ("MORE",ent2type[ent1])
                 options = find_best_options(list(options), w2v_model, ent, ent2type[ent] , sentence)[:3]
             elif len(options) < 3:
                 print ("FEW")
