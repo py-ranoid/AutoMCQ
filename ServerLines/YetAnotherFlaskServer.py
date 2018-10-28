@@ -1,5 +1,6 @@
 from flask import Flask, request , jsonify
 import QuestionGenerator.PDFManip as manip
+from werkzeug.contrib.cache import MemcachedCache
 import ScrapeLord.wikiLeaked as wiki
 import QuestionGenerator.Qgen as qgen
 from DBops.crud import insert,insert_rev
@@ -14,7 +15,15 @@ from Constants import *
 from YesWeKhan.contentFetcher import get_transcript_from_URL
 from ast import literal_eval
 app = Flask(__name__)
+cache = MemcachedCache(['127.0.0.1:11211'])
 
+def get_my_item():
+    rv = cache.get('my-item')
+    if rv is None:
+        rv = calculate_value()
+        cache.set('my-item', rv, timeout=5 * 60)
+    return rv
+    
 @app.route('/addTime', methods=['POST'])
 def addTime():
     score = manip.removeSlashN(request.form[SCORE])
@@ -49,7 +58,11 @@ def getContentForTopic():
         print(resp)
 
         print ("INS_time :", time.time() - init_time)
-        content_tree, wiki_content, topic = wiki.getTreeForFirstGivenTopic(topic)
+        mem_val = cache.get('CT-'+topic)
+        if mem_val is None:
+            content_tree = wiki.getTreeForFirstGivenTopic(topic)[0]
+            cache.set('CT-'+topic, content_tree, timeout=500 * 60)
+        
         print ("CON_time :",time.time() - init_time)
 
         response = ContentResponse()
@@ -196,8 +209,11 @@ def getListOfTopics():
     try:
         topic = manip.removeSlashN(request.form[TOPIC])
         print("getListOfTopics Called " + topic)
-
-        topics = wiki.getListOfValidTopics(topic)
+    
+        mem_val = cache.get('TL-'+topic)
+        if mem_val is None:
+            topics = wiki.getListOfValidTopics(topic)
+            cache.set('TL-'+topic, topics, timeout=500 * 60)
 
         response = TopicsResponse()
         response.setMultipleTopics(topics)
