@@ -21,7 +21,8 @@ The Battle of Plassey was a decisive victory of the British East India Company o
 #""".strip()
 
 def timecop(tag,start):
-    print (tag.upper()[:3]+"_TIME:",time.time()-start)
+    # print (tag.upper()[:3]+"_TIME:",time.time()-start)
+    return
 
 BLANQ = "__________"
 ENTITY_PRIORITIES = {

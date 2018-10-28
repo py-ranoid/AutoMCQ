@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="757b3a5c-5813-4b39-8dae-6bb252567875" name="Default Changelist" comment="Added pojos and doc strings">
-      <change beforePath="$PROJECT_DIR$/QuestionGenerator/Distract.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/Distract.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuestionGenerator/Qgen.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/Qgen.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -67,14 +66,14 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="74" />
-          <entry key="py" value="24331" />
+          <entry key="py" value="24347" />
           <entry key="txt" value="36" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="110" />
-          <entry key="Python" value="24331" />
+          <entry key="Python" value="24347" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -106,14 +105,15 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="28" column="6" lean-forward="true" selection-start-line="28" selection-start-column="6" selection-end-line="28" selection-end-column="6" />
+            <state relative-caret-position="220">
+              <caret line="26" column="20" lean-forward="true" selection-start-line="26" selection-start-column="20" selection-end-line="26" selection-end-column="20" />
               <folding>
                 <element signature="e#24#36#0" expanded="true" />
-                <marker date="1540705373099" expanded="true" signature="21987:22078" ph="..." />
+                <marker date="1540706606994" expanded="true" signature="3447:3452" ph="..." />
+                <marker date="1540706606994" expanded="true" signature="22000:22091" ph="..." />
               </folding>
             </state>
           </provider>
@@ -131,18 +131,18 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/QuestionGenerator/Distract.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="355">
-              <caret line="98" lean-forward="true" selection-start-line="98" selection-end-line="98" />
+            <state relative-caret-position="90">
+              <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
-                <marker date="1540706280712" expanded="true" signature="408:495" ph="..." />
-                <marker date="1540706280712" expanded="true" signature="1095:7696" ph="..." />
-                <marker date="1540706280712" expanded="true" signature="5844:7062" ph="..." />
-                <marker date="1540706280712" expanded="true" signature="7088:7696" ph="..." />
-                <marker date="1540706280712" expanded="true" signature="7721:7722" ph="..." />
+                <marker date="1540706302119" expanded="true" signature="408:495" ph="..." />
+                <marker date="1540706302119" expanded="true" signature="1095:7696" ph="..." />
+                <marker date="1540706302119" expanded="true" signature="5844:7062" ph="..." />
+                <marker date="1540706302119" expanded="true" signature="7088:7696" ph="..." />
+                <marker date="1540706302119" expanded="true" signature="7721:7722" ph="..." />
               </folding>
             </state>
           </provider>
@@ -222,7 +222,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>lower()</find>
       <find>distract</find>
       <find>text</find>
       <find>opt</find>
@@ -248,10 +247,11 @@
       <find>mem</find>
       <find>print</find>
       <find>range</find>
-      <find>sample</find>
       <find>blanq</find>
       <find>topics</find>
       <find>get_noun</find>
+      <find>sample</find>
+      <find>timecop</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -274,11 +274,11 @@
         <option value="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" />
         <option value="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" />
         <option value="$PROJECT_DIR$/YetAnotherFlaskServer.py" />
-        <option value="$PROJECT_DIR$/QuestionGenerator/Qgen.py" />
-        <option value="$PROJECT_DIR$/QuestionGenerator/Qgen.py" />
         <option value="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" />
         <option value="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" />
         <option value="$PROJECT_DIR$/QuestionGenerator/Distract.py" />
+        <option value="$PROJECT_DIR$/QuestionGenerator/Qgen.py" />
+        <option value="$PROJECT_DIR$/QuestionGenerator/Qgen.py" />
       </list>
     </option>
   </component>
@@ -747,17 +747,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="28" column="6" lean-forward="true" selection-start-line="28" selection-start-column="6" selection-end-line="28" selection-end-column="6" />
-          <folding>
-            <element signature="e#24#36#0" expanded="true" />
-            <marker date="1540705373099" expanded="true" signature="21987:22078" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/QuestionGenerator/PDFManip.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="210">
@@ -773,15 +762,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/QuestionGenerator/Distract.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="355">
-          <caret line="98" lean-forward="true" selection-start-line="98" selection-end-line="98" />
+        <state relative-caret-position="90">
+          <caret line="6" column="4" selection-start-line="6" selection-start-column="4" selection-end-line="6" selection-end-column="4" />
           <folding>
             <element signature="e#0#33#0" expanded="true" />
-            <marker date="1540706280712" expanded="true" signature="408:495" ph="..." />
-            <marker date="1540706280712" expanded="true" signature="1095:7696" ph="..." />
-            <marker date="1540706280712" expanded="true" signature="5844:7062" ph="..." />
-            <marker date="1540706280712" expanded="true" signature="7088:7696" ph="..." />
-            <marker date="1540706280712" expanded="true" signature="7721:7722" ph="..." />
+            <marker date="1540706302119" expanded="true" signature="408:495" ph="..." />
+            <marker date="1540706302119" expanded="true" signature="1095:7696" ph="..." />
+            <marker date="1540706302119" expanded="true" signature="5844:7062" ph="..." />
+            <marker date="1540706302119" expanded="true" signature="7088:7696" ph="..." />
+            <marker date="1540706302119" expanded="true" signature="7721:7722" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="26" column="20" lean-forward="true" selection-start-line="26" selection-start-column="20" selection-end-line="26" selection-end-column="20" />
+          <folding>
+            <element signature="e#24#36#0" expanded="true" />
+            <marker date="1540706606994" expanded="true" signature="3447:3452" ph="..." />
+            <marker date="1540706606994" expanded="true" signature="22000:22091" ph="..." />
           </folding>
         </state>
       </provider>
