@@ -443,7 +443,7 @@ def print_results(sents):
     print(len(sents))
 
 def blanq_sent(sentence,target):
-    blanked = re.sub(r"\b"+target+r"\b",BLANQ,sentence)
+    blanked = sentence.replace(" "+target+" ",BLANQ)
     if BLANQ in blanked:
         return blanked    
     else:
