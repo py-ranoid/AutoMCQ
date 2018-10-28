@@ -118,6 +118,7 @@ def find_best_options(options, doc_w2v_model, answer,ent_type , sentence):
             options = date_eliminator(answer,options)
         print ("DONE WITH DATE DISTRACT")
         # TODO If reduced options are too few, add synthetic date discriminators
+    temp = time.time()
     for opt in options:
         # Eliminate options that have too many common ngrams
         opt_low = opt.lower()
@@ -127,7 +128,6 @@ def find_best_options(options, doc_w2v_model, answer,ent_type , sentence):
         if opt == answer:
             continue
         opt_grams = ngrams(opt_low, 3)
-        timecop("wmb",time.time()-temp)
         if metric(source_grams, opt_grams) > 0.18:
             # Assign very high distance if metric is high
             distances[opt] = 40
@@ -135,14 +135,14 @@ def find_best_options(options, doc_w2v_model, answer,ent_type , sentence):
             # print (answer,sentence,sentence.replace(answer , opt))
             distances[opt] = doc_w2v_model.wmdistance(word_tokenize(sentence.replace(answer , opt).lower()),word_tokenize(sentence.lower()))
             # distances[opt] = doc_w2v_model.wmdistance(word_tokenize(opt.lower()), word_tokenize(answer.lower()))
-        timecop("wma",time.time()-temp)
-        temp = time.time()
+                
         if len(opt_set.union(ans_set)) == len(opt_set):
             # print(opt_set, ans_set)
-            distances[opt] *= 2
+            distances[opt] *= 2    
     # Assign distance to answer to 0 (closest to target)
     distances[answer] = 0
     options.sort(key=lambda x: distances[x])
+    print ("Opt_sort_time:",time.time()-temp)
     # print (distances)
     return options
 
