@@ -236,7 +236,7 @@ def verb_picker(doc):
     for sent in doc.sents:
         for x in sent:
             # Pick verbs that are not stopwords or roots of sentences shorter than MAX_SENT_LEN
-            if x.pos_=="VERB" and not x.is_stop:
+            if x.pos_=="VERB" and not x.is_stop and len(x.orth_) > 3:
                 all_verbs.add(x.lower_)
                 if not x.head == x:
                     if x.n_lefts:
@@ -263,10 +263,6 @@ def get_mul_optdoc(option,sent):
     
 def get_verb_qs(doc , skip_sent_ids = set()):
     sent_verbs, all_verbs = verb_picker(doc)
-
-    for x in all_verbs:
-        if len(x) <= 3:
-            all_verbs.remove(x)
 
     questions = []
     for s in sent_verbs:
