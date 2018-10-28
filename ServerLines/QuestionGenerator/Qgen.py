@@ -340,9 +340,7 @@ def noun_picker(doc):
 def get_noun_opts(all_nouns,target,sent):
     target_words = word_tokenize(target.lower())
     noun_words = list(all_nouns)
-    for x in noun_words:
-        if(len(x) <= 3):
-            noun_words.remove(x)
+
     candidates = sorted(noun_words,key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x))*(1/get_mul_optdoc(x.lower(),sent)))[:2]
     while target in candidates:
         candidates.remove(target)
