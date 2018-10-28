@@ -58,7 +58,6 @@ def normalDateDistract(answer):
         option1 = date
         option2 = date
 
-        print(date)
 
         if (dateFlag):
             random1, random2 = -1, -1
@@ -97,7 +96,6 @@ def normalDateDistract(answer):
                 op = -1 * random2 if randint(0, 4) < 3 else random2
                 option2 = option2.replace(YEAR_CONSTANT, str(actual+op))
 
-                print(option1  ,option2)
 
         return [removeTrailingSpace(answer), removeTrailingSpace(option1), removeTrailingSpace(option2)]
 
@@ -210,12 +208,11 @@ def datesDistract(answer):
 
     if (len(yearValue) <= 1):
         try:
-            print('Date try')
             options = normalDateDistract(date)
+
             return options
         except ValueError as ex:
             #The input could be like 1990s etc
-            print('Special Year try')
             options = specialYearsDistract(date)
             return options
         except Exception as ex:
@@ -237,18 +234,14 @@ def datesDistract2(date):
         yearFlag = True if len(yearValue) > 0 else False
 
         if(yearFlag):
-            # print(yearValue)
             date = re.sub(YEAR_REGEX , '' , date)
-            # print(date)
 
         monthValue = re.findall(MONTH_REGEX , date)
         dateValue = re.findall(DATE_REGEX , date)
 
-        # print(yearValue , monthValue , dateValue)
         monthFlag = True if len(monthValue) > 0 else False
         dateFlag = True if len(dateValue) > 0 else False
 
-        # print(dateValue)
 
         finalString = ''
         option1 = ''
@@ -298,7 +291,6 @@ def datesDistract2(date):
 
                 option2 += str(int(actual) + op) + ' '
 
-        # print([finalString, option1, option2])
         return [removeTrailingSpace(finalString) , removeTrailingSpace(option1) , removeTrailingSpace(option2)]
 
     except ValueError as ex:

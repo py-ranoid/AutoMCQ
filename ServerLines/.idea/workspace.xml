@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="757b3a5c-5813-4b39-8dae-6bb252567875" name="Default Changelist" comment="Added pojos and doc strings">
       <change beforePath="$PROJECT_DIR$/QuestionGenerator/Distract.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/Distract.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/QuestionGenerator/Qgen.py" beforeDir="false" afterPath="$PROJECT_DIR$/QuestionGenerator/Qgen.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" beforeDir="false" afterPath="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -66,14 +68,14 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="70" />
-          <entry key="py" value="23043" />
+          <entry key="py" value="23063" />
           <entry key="txt" value="36" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="106" />
-          <entry key="Python" value="23043" />
+          <entry key="Python" value="23063" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -93,8 +95,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/QuestionGenerator/PDFManip.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="355">
-              <caret line="27" column="39" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="39" />
+            <state relative-caret-position="150">
+              <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
                 <marker date="1540629357523" expanded="true" signature="237:238" ph="..." />
@@ -107,21 +109,21 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="38" column="13" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="13" />
+            <state relative-caret-position="707">
+              <caret line="116" column="29" lean-forward="true" selection-start-line="116" selection-start-column="29" selection-end-line="116" selection-end-column="29" />
               <folding>
                 <element signature="e#24#36#0" expanded="true" />
-                <marker date="1540666700994" expanded="true" signature="20950:21091" ph="..." />
+                <marker date="1540687139507" expanded="true" signature="20912:21053" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-72">
-              <caret line="64" column="50" selection-start-line="64" selection-start-column="50" selection-end-line="64" selection-end-column="50" />
+            <state relative-caret-position="209">
+              <caret line="37" column="40" selection-start-line="37" selection-start-column="40" selection-end-line="37" selection-end-column="40" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
               </folding>
@@ -129,17 +131,17 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/QuestionGenerator/Distract.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="392">
-              <caret line="350" lean-forward="true" selection-start-line="350" selection-end-line="350" />
+            <state relative-caret-position="3240">
+              <caret line="216" selection-start-line="216" selection-end-line="216" />
               <folding>
                 <element signature="e#0#33#0" expanded="true" />
-                <marker date="1540671462610" expanded="true" signature="750:7212" ph="..." />
-                <marker date="1540671462610" expanded="true" signature="5294:6511" ph="..." />
-                <marker date="1540671462610" expanded="true" signature="6537:7212" ph="..." />
-                <marker date="1540671462610" expanded="true" signature="7237:7238" ph="..." />
+                <marker date="1540672091450" expanded="true" signature="750:7084" ph="..." />
+                <marker date="1540672091450" expanded="true" signature="5233:6450" ph="..." />
+                <marker date="1540672091450" expanded="true" signature="6476:7084" ph="..." />
+                <marker date="1540672091450" expanded="true" signature="7109:7110" ph="..." />
               </folding>
             </state>
           </provider>
@@ -157,8 +159,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/YetAnotherFlaskServer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="160">
-              <caret line="232" column="12" selection-start-line="232" selection-start-column="8" selection-end-line="232" selection-end-column="12" />
+            <state relative-caret-position="100">
+              <caret line="228" lean-forward="true" selection-start-line="228" selection-end-line="228" />
               <folding>
                 <element signature="e#0#42#0" expanded="true" />
                 <element signature="e#4615#4687#0" />
@@ -222,8 +224,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>limit</find>
-      <find>Number of questions ge</find>
       <find>unicode</find>
       <find>limit*3</find>
       <find>se</find>
@@ -250,7 +250,9 @@
       <find>gett</find>
       <find>parseerr</find>
       <find>getcontent</find>
+      <find>prnt</find>
       <find>print</find>
+      <find>print(</find>
       <find>trac</find>
     </findStrings>
   </component>
@@ -273,12 +275,12 @@
         <option value="$PROJECT_DIR$/QuestionGenerator/PDFManip.py" />
         <option value="$PROJECT_DIR$/QuestionGenerator/Qgen_utils.py" />
         <option value="$PROJECT_DIR$/YetAnotherFlaskServer.py" />
-        <option value="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" />
-        <option value="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" />
         <option value="$PROJECT_DIR$/Constants.py" />
         <option value="$PROJECT_DIR$/QuestionGenerator/Qgen.py" />
-        <option value="$PROJECT_DIR$/QuestionGenerator/Qgen.py" />
         <option value="$PROJECT_DIR$/QuestionGenerator/Distract.py" />
+        <option value="$PROJECT_DIR$/QuestionGenerator/Qgen.py" />
+        <option value="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" />
+        <option value="$PROJECT_DIR$/ScrapeLord/wikiLeaked.py" />
       </list>
     </option>
   </component>
@@ -710,18 +712,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/QuestionGenerator/PDFManip.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="355">
-          <caret line="27" column="39" selection-start-line="27" selection-start-column="39" selection-end-line="27" selection-end-column="39" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-            <marker date="1540629357523" expanded="true" signature="237:238" ph="..." />
-            <marker date="1540629357523" expanded="true" signature="269:503" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen_utils.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1140">
@@ -739,31 +729,35 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
+    <entry file="file://$PROJECT_DIR$/QuestionGenerator/Distract.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="38" column="13" selection-start-line="38" selection-start-column="5" selection-end-line="38" selection-end-column="13" />
+        <state relative-caret-position="3240">
+          <caret line="216" selection-start-line="216" selection-end-line="216" />
           <folding>
-            <element signature="e#24#36#0" expanded="true" />
-            <marker date="1540666700994" expanded="true" signature="20950:21091" ph="..." />
+            <element signature="e#0#33#0" expanded="true" />
+            <marker date="1540672091450" expanded="true" signature="750:7084" ph="..." />
+            <marker date="1540672091450" expanded="true" signature="5233:6450" ph="..." />
+            <marker date="1540672091450" expanded="true" signature="6476:7084" ph="..." />
+            <marker date="1540672091450" expanded="true" signature="7109:7110" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
+    <entry file="file://$PROJECT_DIR$/QuestionGenerator/Qgen.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-72">
-          <caret line="64" column="50" selection-start-line="64" selection-start-column="50" selection-end-line="64" selection-end-column="50" />
+        <state relative-caret-position="707">
+          <caret line="116" column="29" lean-forward="true" selection-start-line="116" selection-start-column="29" selection-end-line="116" selection-end-column="29" />
           <folding>
-            <element signature="e#0#16#0" expanded="true" />
+            <element signature="e#24#36#0" expanded="true" />
+            <marker date="1540687139507" expanded="true" signature="20912:21053" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/YetAnotherFlaskServer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="232" column="12" selection-start-line="232" selection-start-column="8" selection-end-line="232" selection-end-column="12" />
+        <state relative-caret-position="100">
+          <caret line="228" lean-forward="true" selection-start-line="228" selection-end-line="228" />
           <folding>
             <element signature="e#0#42#0" expanded="true" />
             <element signature="e#4615#4687#0" />
@@ -773,16 +767,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/QuestionGenerator/Distract.py">
+    <entry file="file://$PROJECT_DIR$/QuestionGenerator/PDFManip.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="392">
-          <caret line="350" lean-forward="true" selection-start-line="350" selection-end-line="350" />
+        <state relative-caret-position="150">
+          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
           <folding>
-            <element signature="e#0#33#0" expanded="true" />
-            <marker date="1540671462610" expanded="true" signature="750:7212" ph="..." />
-            <marker date="1540671462610" expanded="true" signature="5294:6511" ph="..." />
-            <marker date="1540671462610" expanded="true" signature="6537:7212" ph="..." />
-            <marker date="1540671462610" expanded="true" signature="7237:7238" ph="..." />
+            <element signature="e#0#13#0" expanded="true" />
+            <marker date="1540629357523" expanded="true" signature="237:238" ph="..." />
+            <marker date="1540629357523" expanded="true" signature="269:503" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ScrapeLord/wikiLeaked.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="209">
+          <caret line="37" column="40" selection-start-line="37" selection-start-column="40" selection-end-line="37" selection-end-column="40" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
           </folding>
         </state>
       </provider>

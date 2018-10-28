@@ -36,10 +36,6 @@ def getListOfValidTopics(topic):
     """
     try:
         topics = wikipedia.search(topic)
-        for t in topics:
-            if t.lower() == topic.lower():
-                topics.remove(t)
-                break
         return topics
     except wikipedia.exceptions.DisambiguationError as ex:
         return ex.options
@@ -137,7 +133,6 @@ def getTreeForFirstGivenTopic(topic):
     """
     try:
         topic, content = getPageContentForFirstTopic(topic)
-        print(len(content))
         tree, para = getTreeFromContent(content, topic)
         return tree, para, topic
     except ServerError as ex:
