@@ -6,6 +6,26 @@ from YetAnotherException import ServerError
 import traceback
 TIME_ENTITIES = ["Year", "Month", "Day", "Week", "Decade", "Millenium"]
 
+END_ST = 'st'
+END_ND = 'nd'
+END_RD = 'rd'
+END_TH = 'th'
+
+MAX_CENTURY = 21
+
+ENDER_MAPPING = {
+    1: END_ST,
+    2: END_ND,
+    3: END_RD,
+}
+
+
+def getEnderMapping(endVal):
+    try:
+        return ENDER_MAPPING[int(endVal)]
+    except:
+        return END_TH
+
 YEAR_CONSTANT = 'YEAR'
 DATE_CONSTANT = 'DATE'
 MONTH_CONSTANT = 'MONTH'
@@ -14,7 +34,8 @@ S_YEAR_REGEX = r'([12][0-9]{3})s'
 YEAR_REGEX = r'[12][0-9]{3}'
 DATE_REGEX = r'[12]?[0-9]|3[01]'
 YEAR_REGEX = r'[12][0-9]{3}'
-TH_YEAR_REGEX = r'([0-9]{2})th'
+# CENT_YEAR_REGEX = r'([0-9]{2}th)|([0-9]{2}rd)|([0-9]{2}nd)|([0-9]{2}st)'
+CENT_YEAR_REGEX = r'([0-9]{2})(th|rd|nd|st)'
 ZERO = '0'
 ONE = '1'
 
@@ -108,7 +129,7 @@ def specialYearsDistract(answer):
     yearValue = re.findall(S_YEAR_REGEX, date)
     yearFlag = True if len(yearValue) > 0 else False
 
-    centValue = re.findall(TH_YEAR_REGEX, date)
+    centValue = re.findall(CENT_YEAR_REGEX, date)
     centFlag = True if len(centValue) > 0 else False
 
     if (yearFlag):
@@ -133,23 +154,23 @@ def specialYearsDistract(answer):
 
 
     elif(centFlag):
-        date = re.sub(DATE_REGEX, CENT_CONSTANT, date)
-
-        actual = int(centValue[0])
+        date = re.sub(CENT_YEAR_REGEX, CENT_CONSTANT, date)
+        actual , _ = centValue[0]
+        actual = int(actual)
         option1 = date
         option2 = date
 
         random1, random2 = -1, -1
-        while random1 == random2:
-            random1 = -1 * randint(1, 3) if randint(0, 4) < 3 else randint(1, 3)
-            random2 = -1 * randint(1, 3) if randint(0, 4) < 3 else randint(1, 3)
+        while random1 == random2 or random1 > MAX_CENTURY or random2 > MAX_CENTURY:
+            random1 = -1 * randint(1, 3) + actual if randint(0, 4) < 3 else randint(1, 3) + actual
+            random2 = -1 * randint(1, 3) + actual if randint(0, 4) < 3 else randint(1, 3) + actual
 
-        random1 = str(actual + (random1))
-        random2 = str(actual + (random2))
+
+        random1 = str(random1) + getEnderMapping(random1%10)
+        random2 = str(random2) + getEnderMapping(random2%10)
 
         option1 = option1.replace(CENT_CONSTANT, random1)
         option2 = option2.replace(CENT_CONSTANT, random2)
-
 
         return [removeTrailingSpace(answer), removeTrailingSpace(option1), removeTrailingSpace(option2)]
 
@@ -197,6 +218,7 @@ def rangeYearDistract(answer):
     option1 = option1.replace(YEAR_1 , str(opt12))
     option2 = option2.replace(YEAR_0 , str(opt21))
     option2 = option2.replace(YEAR_1 , str(opt22))
+
 
     return [removeTrailingSpace(answer), removeTrailingSpace(option1), removeTrailingSpace(option2)]
 
@@ -340,3 +362,5 @@ def datesDistract2(date):
 
     except Exception as ex:
         raise ex
+
+specialYearsDistract("The early 21st century")
