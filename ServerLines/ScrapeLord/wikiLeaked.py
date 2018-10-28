@@ -53,10 +53,6 @@ def getPageContentForFirstTopic(topic):
     try:
         content = wikipedia.WikipediaPage(title = topic)
         return topic , manip.removeSlashN(content.content)
-    except wikipedia.exceptions.DisambiguationError as ex:
-        return ex.options
-    except wikipedia.exceptions.PageError as ex:
-        raise ServerError(NO_TOPICS)
     except Exception as ex:
         raise ServerError('New Error: ' + str(ex))
     except ServerError as ex:

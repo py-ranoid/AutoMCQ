@@ -1,6 +1,6 @@
 from flask import Flask, request , jsonify
 import QuestionGenerator.PDFManip as manip
-from werkzeug.contrib.cache import MemcachedCache
+from werkzeug.contrib.cache import SimpleCache
 import ScrapeLord.wikiLeaked as wiki
 import QuestionGenerator.Qgen as qgen
 from DBops.crud import insert,insert_rev
@@ -15,7 +15,7 @@ from Constants import *
 from YesWeKhan.contentFetcher import get_transcript_from_URL
 from ast import literal_eval
 app = Flask(__name__)
-cache = MemcachedCache(['127.0.0.1:11211'])
+cache = SimpleCache()
 
 def get_my_item():
     rv = cache.get('my-item')
@@ -60,9 +60,11 @@ def getContentForTopic():
         print ("INS_time :", time.time() - init_time)
         mem_val = cache.get('CT-'+topic)
         if mem_val is None:
+            print ("MEM IS NONE")
             content_tree = wiki.getTreeForFirstGivenTopic(topic)[0]
             cache.set('CT-'+topic, content_tree, timeout=500 * 60)
-        
+        else:
+            content_tree = mem_val
         print ("CON_time :",time.time() - init_time)
 
         response = ContentResponse()
