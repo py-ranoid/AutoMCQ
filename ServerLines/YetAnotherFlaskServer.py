@@ -60,9 +60,11 @@ def getContentForTopic():
         print ("INS_time :", time.time() - init_time)
         mem_val = cache.get('CT-'+topic)
         if mem_val is None:
+            print ("MEM IS NONE")
             content_tree = wiki.getTreeForFirstGivenTopic(topic)[0]
             cache.set('CT-'+topic, content_tree, timeout=500 * 60)
-        
+        else:
+            content_tree = mem_val
         print ("CON_time :",time.time() - init_time)
 
         response = ContentResponse()
