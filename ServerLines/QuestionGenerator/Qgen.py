@@ -12,7 +12,6 @@ from nltk.stem.porter import PorterStemmer
 from QuestionGenerator.Qgen_utils import ngrams, metric, date_eliminator, resolve_prons, w2v_model,get_w2v_options
 from QuestionGenerator.Distract import datesDistract
 from Constants import *
-
 from QuestionGenerator import PDFManip as manip
 
 try : nlp = spacy.load('en_core_web_sm')
@@ -37,7 +36,8 @@ The Battle of Plassey was a decisive victory of the British East India Company o
 #""".strip()
 
 def timecop(tag,start):
-    print (tag.upper()[:3]+"_TIME:",time.time()-start)
+    # print (tag.upper()[:3]+"_TIME:",time.time()-start)
+    return
 
 BLANQ = "__________"
 ENTITY_PRIORITIES = {
@@ -251,7 +251,7 @@ def verb_picker(doc):
     for sent in doc.sents:
         for x in sent:
             # Pick verbs that are not stopwords or roots of sentences shorter than MAX_SENT_LEN
-            if x.pos_=="VERB" and not x.is_stop:
+            if x.pos_=="VERB" and not x.is_stop and len(x.orth_) > 3:
                 all_verbs.add(x.lower_)
                 if not x.head == x:
                     if x.n_lefts:
@@ -278,6 +278,7 @@ def get_mul_optdoc(option,sent):
     
 def get_verb_qs(doc , skip_sent_ids = set()):
     sent_verbs, all_verbs = verb_picker(doc)
+
     questions = []
     for s in sent_verbs:
 
@@ -353,7 +354,9 @@ def noun_picker(doc):
 
 def get_noun_opts(all_nouns,target,sent):
     target_words = word_tokenize(target.lower())
-    candidates = sorted(list(all_nouns),key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x))*(1/get_mul_optdoc(x.lower(),sent)))[:2]
+    noun_words = list(all_nouns)
+
+    candidates = sorted(noun_words,key=lambda x:w2v_model.wmdistance(target_words,word_tokenize(x))*(1/get_mul_optdoc(x.lower(),sent)))[:2]
     while target in candidates:
         candidates.remove(target)
     return candidates
@@ -578,27 +581,34 @@ def getWikiQuestions(allContent , quizContent):
 
 
 def transformAnswerToIndex(questions):
-    for i in range(len(questions)):
-        questions[i][ANSWER] = questions[i][OPTIONS].index(questions[i][ANSWER])
-
+    print(questions)
+    questions[ANSWER] = questions[OPTIONS].index(questions[ANSWER])
     return questions
 
 def capitalizeEverything(questionArray):
     questions = []
-    try:
-        for questionInfo in questionArray:
-            questions.append({
+    for questionInfo in questionArray:
+        try:
+            q = {
                 QUESTION: questionInfo[QUESTION],
                 QUESTION_RANK: questionInfo[QUESTION_RANK],
                 ANSWER: questionInfo[ANSWER].upper(),
                 OPTIONS: [manip.removeTrailingContent(option.upper()) for option in questionInfo[OPTIONS]],
                 ANSWER_TYPE: questionInfo[ANSWER_TYPE].upper()
-            })
+            }
+            print('qqq' , q)
+            q[ANSWER] = q[OPTIONS].index(q[ANSWER])
 
-        return transformAnswerToIndex(questions)
-    except:
-        print(questionArray)
-        raise Exception("Index problem")
+
+            questions.append(q)
+        except IndexError as ex:
+            print(questionInfo)
+            pass
+        except:
+            print(questionInfo)
+            pass
+
+    return questions
 
 def getQuestions(content):
     """

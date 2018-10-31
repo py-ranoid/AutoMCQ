@@ -1,8 +1,21 @@
 import PyPDF2
 import re
 import sys
+# from fastrand import pcg32bounded
 from unidecode import unidecode
 DEFAULT_FILE = 'temp.pdf'
+#
+# def randint(lower , upper):
+#     randNum = pcg32bounded(upper - lower) + lower
+#     return randNum
+#
+# def sample(lower , upper , numSamples):
+#     randNums = set()
+#     while len(randNums) < numSamples:
+#         randNum = randint(lower , upper)
+#         if randNum not in randNums:
+#             randNums.add(randNum)
+#     return randNums
 
 def removeNonAsciiCharacters(content):
     content = unidecode(content)
@@ -16,6 +29,13 @@ def stringifyContent(content):
     else:
         content = str(content)
         content = removeNonAsciiCharacters(content)
+    return content
+
+def removeNewLine(content):
+    content = stringifyContent(content)
+    content = re.sub(r'\n', '. ', content)
+    content = re.sub(r' +', ' ', content)
+    content = re.sub(r'[.]+', '.', content)
     return content
 
 def removeSlashN(content):
@@ -32,7 +52,7 @@ def removeSlashQuotes(content):
     return content
 
 def removeInitialSpace(content):
-    if content[0] == ' ':
+    while content[0] == ' ':
         content = content[1:]
     return content
 

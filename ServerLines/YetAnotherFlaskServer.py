@@ -216,6 +216,8 @@ def getListOfTopics():
         if mem_val is None:
             topics = wiki.getListOfValidTopics(topic)
             cache.set('TL-'+topic, topics, timeout=500 * 60)
+        else:
+            topics = mem_val
 
         response = TopicsResponse()
         response.setMultipleTopics(topics)
