@@ -6,14 +6,15 @@ RUN mkdir /install
 WORKDIR /install
 COPY ./requirements.txt /requirements.txt
 ENV ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future
+RUN apk add build-base
 RUN pip install --install-option="--prefix=/install" -r /requirements.txt \
     && python3 -m nltk.downloader 'punkt' \
     && python3 -m spacy download en
 
 FROM base
-COPY --from=builder /install /usr/local
-COPY ./ServerLines /server
-WORKDIR /server
+# COPY --from=builder /install /usr/local
+# COPY ./ServerLines /server
+# WORKDIR /server
 
 EXPOSE 5000
 ENV DB_URL=https://graphql-on-pg.herokuapp.com/v1alpha1/graphql

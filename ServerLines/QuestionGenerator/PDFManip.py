@@ -31,6 +31,13 @@ def stringifyContent(content):
         content = removeNonAsciiCharacters(content)
     return content
 
+def removeNewLine(content):
+    content = stringifyContent(content)
+    content = re.sub(r'\n', '. ', content)
+    content = re.sub(r' +', ' ', content)
+    content = re.sub(r'[.]+', '.', content)
+    return content
+
 def removeSlashN(content):
     content = stringifyContent(content)
     content = re.sub(r'\n' , ' ' , content)
@@ -45,7 +52,7 @@ def removeSlashQuotes(content):
     return content
 
 def removeInitialSpace(content):
-    if content[0] == ' ':
+    while content[0] == ' ':
         content = content[1:]
     return content
 
