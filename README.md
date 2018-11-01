@@ -1,5 +1,5 @@
 # BlanQ 
-- View demo [here](http://bit.ly/blanqAppDemo)
+- View demo [here](http://bit.ly/blanqPageDemo)
 - [Download the app](http://app.blanq.xyz)
 
 ## Using NLP to generate Multiple-Choice Questions from any document
