@@ -1,6 +1,6 @@
 # BlanQ 
 - View demo [here](http://bit.ly/blanqAppDemo)
-- [Download the app](app.blanq.xyz)
+- [Download the app](http://app.blanq.xyz)
 
 ## Using NLP to generate Multiple-Choice Questions from any document
 - Statistically determines best entities to blank
