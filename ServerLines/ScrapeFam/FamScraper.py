@@ -10,6 +10,7 @@ SKIP_SECTIONS = [
 P_TAG = 0
 H2_TAG = 1
 SPAN_TAG = 2
+A_TAG = 3
 NO_TAG = -1
 
 class fandomContainer:
@@ -75,6 +76,11 @@ def getAText(bs):
 def getNameFromUrl(url):
     return url.split('.')[0].split('/')[-1]
 
+def getNavData(baseURL):
+    nav_url = baseURL + "/api/v1/Navigation/Data"
+    r = requests.get(nav_url)
+    return r.json()
+
 def getLinksToScrape(baseUrl, name=None):
     s = soup(requests.get(baseUrl).content,'lxml')
     allSections = s.findAll("div", {"class": "wds-tabs__tab-label wds-dropdown__toggle"})
@@ -90,14 +96,17 @@ def getLinksToScrape(baseUrl, name=None):
         if getSpanText(section) in SKIP_SECTIONS:
             continue
         sibSection = section.find_next_sibling()
+        print ("- ",getSpanText(section))
         headLink = fandomContainer(name=getSpanText(section), link= getALink(section, baseUrl))
         headLinksToScrape = []
 
         for subMenus in sibSection.findAll('li' , attrs={"class": "wds-dropdown-level-2"}):
+            print ("\t- ",getSpanText(subMenus))
             subLink = fandomContainer(name=getSpanText(subMenus), link= getALink(subMenus, baseUrl))
             subLinksToScrape = []
 
             for subSubHeadings in subMenus.find('ul' , {"class": "wds-list wds-is-linked"}).findAll('a'):
+                print ("\t\t- ",getSpanText(subSubHeadings))
                 subSubLink = fandomContainer(name= getAText(subSubHeadings), link=getALink(subSubHeadings, baseUrl))
                 subLinksToScrape.append(subSubLink)
 
@@ -113,12 +122,14 @@ def getLinksToScrape(baseUrl, name=None):
 
 def getTag(content):
     content = str(content)
-    if '<p>' in content:
+    if content.startswith('<p'):
         return P_TAG
-    elif '<h2>' in content:
+    elif content.startswith('<h2'):
         return H2_TAG
-    elif '<span>' in content:
+    elif content.startswith('<span'):
         return SPAN_TAG
+    elif content.startswith('<a'):
+        return A_TAG
     else:
         return NO_TAG
 
@@ -147,18 +158,35 @@ def addDataToContainer(url):
             curContent = ''
         elif(tag is SPAN_TAG):
             pass
+def getEpisodeNames(showname,season=1,encode=True,baseurl=""):
+    url = "http://www.omdbapi.com/?t="+'+'.join(showname.split(' '))+"&apikey=54f72103&Season="+str(season)
+    if encode:
+        return [baseurl+'/'+i['Title'].replace(" ","_") for i in requests.get(url).json()['Episodes']]
+    else:
+        return [i['Title'] for i in requests.get(url).json()['Episodes']]
 
-    return segContent
+def legitSoup(check_url,baseUrl):
+    s = soup(requests.get(check_url).content)
+    finUrl = check_url
+    if s.select_one(".noarticletext"):
+        alt = s.select_one(".noarticletext .alternative-suggestion a")
+        if alt:
+            finUrl = baseUrl+alt.attrs['href']
+            return soup(requests.get(finUrl).content),finUrl
+        else:
+            return None,"Not found"
+    return s,finUrl
 
 WIKIA_LINK = 'http://www.wikia.com/api/v1/Wikis/ByString'
 HTTP_PREFIX = 'http://'
 def getWikiaLink(showname):
-    r = requests.post(WIKIA_LINK, data={'string': showname, 'limit': '1'})
-    return HTTP_PREFIX+json.loads(r.content)['items'][0]['domain']
+    r = requests.post(WIKIA_LINK, data={"string": showname, "limit": "1"})
+    return HTTP_PREFIX+r.json()['items'][0]['domain']
 
 
 def getContainer(showname):
     baseUrl = getWikiaLink(showname)
+    print (baseUrl)
     container = getLinksToScrape(baseUrl, showname)
     return container
 
