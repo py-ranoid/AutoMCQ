@@ -1,6 +1,7 @@
 # BlanQ 
 - View demo [here](http://bit.ly/blanqAppDemo)
 - [Download the app](app.blanq.xyz)
+
 ## Using NLP to generate Multiple-Choice Questions from any document
 - Statistically determines best entities to blank
 - Generate semantically similar options based on context and corpus
@@ -44,7 +45,7 @@ Quiz creation currently requires
 - Friends can challenge each other
 
 
-### Made by
+## Made by
 - [Vishal Gupta](github.com/py-ranoid) (Question Generation & NLP): vishalg8897@gmail.com
 - [Sundararaman](github.com/vsundar17697) (Server endpoints): vsundar17697@gmail.com
 - [Shrikanth Ravi](github.com/shrikanth7698)(Android app): catcalm7698@gmail.com
